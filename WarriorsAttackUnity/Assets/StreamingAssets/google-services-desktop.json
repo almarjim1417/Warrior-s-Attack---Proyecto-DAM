@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "132811424695",
+    "project_id": "warrior-s-attack-proyectodam",
+    "storage_bucket": "warrior-s-attack-proyectodam.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132811424695:android:aeb32163348b47e2209e32",
+        "android_client_info": {
+          "package_name": "com.dam.warriorsattack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHZ4ylZY6EvDEuM-KO_XjapfBEiSHY2yM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

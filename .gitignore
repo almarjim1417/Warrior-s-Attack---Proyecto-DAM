@@ -1,0 +1,25 @@
+# .gitignore de Unity para proyectos en CUALQUIER subcarpeta
+
+# Ignora estas carpetas en cualquier parte del proyecto
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+[Uu]serSettings/
+
+# Archivos de Visual Studio
+.vs/
+.vscode/
+*.sln
+*.csproj
+*.unityproj
+
+# Archivos de Rider
+.idea/
+
+# Archivos del SO
+.DS_Store
+Thumbs.db
