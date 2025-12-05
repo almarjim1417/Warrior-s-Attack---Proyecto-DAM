@@ -1,19 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Firebase; // ¡Importante!
+using Firebase;
 
 public class FirebaseManager : MonoBehaviour
 {
+    public static FirebaseManager Instance { get; private set; }
+
+    public Texture2D defaultCursor;
+    public Texture2D textCursor;
+
     public static bool isFirebaseReady = false;
+
+    // Awake se ejecuta antes que el Start
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            // Si ya existe un FirebaseManager, este se destruye
+            Destroy(this.gameObject);
+        }
+    }
 
     void Start()
     {
-        // Hacemos que este objeto no se destruya al cambiar de escena
-        DontDestroyOnLoad(this.gameObject);
+        SetDefaultCursor();
 
-        // Inicia el proceso de  inicialización
         StartCoroutine(InitializeFirebase());
+    }
+
+    public void SetDefaultCursor()
+    {
+        // Ponemos la lanza de cursor
+        Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.Auto);
+    }
+
+    public void SetTextCursor()
+    {
+        // Ponemos el cursor de texto
+        Vector2 hotspot = new Vector2(textCursor.width / 2, textCursor.height / 2);
+        Cursor.SetCursor(textCursor, hotspot, CursorMode.Auto);
     }
 
     private IEnumerator InitializeFirebase()
@@ -32,7 +63,7 @@ public class FirebaseManager : MonoBehaviour
         if (dependencyStatus == Firebase.DependencyStatus.Available)
         {
             Debug.Log("Firebase inicializado correctamente.");
-            isFirebaseReady = true; // Marcamos como listo
+            isFirebaseReady = true;
             
             // Inicializamos la App
             Firebase.FirebaseApp app = Firebase.FirebaseApp.DefaultInstance;

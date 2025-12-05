@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:132811424695:android:aeb32163348b47e2209e32",
+        "mobilesdk_app_id": "1:132811424695:android:ae90a21e2dcb18ee209e32",
         "android_client_info": {
-          "package_name": "com.dam.warriorsattack"
+          "package_name": "com.amj.warriorsattack"
         }
       },
       "oauth_client": [],

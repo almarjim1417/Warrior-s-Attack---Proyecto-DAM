@@ -3,19 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 
 //Firebase
 using Firebase.Auth;
 using Firebase.Firestore;
 using System.Threading.Tasks;
-using Firebase; // Tareas asíncronas
+using Firebase;
+using UnityEngine.SceneManagement;
+
 
 public class AuthManager : MonoBehaviour
 {
 
-    // --- Referencias a Firebase ---
-    private FirebaseAuth auth;          //Instancia de Autenticación
-    private FirebaseFirestore db;     //Instancia de la Base de Datos
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
 
     [Header("--- Paneles de UI ---")]
     public GameObject welcomePanel;
@@ -45,7 +47,7 @@ public class AuthManager : MonoBehaviour
 
     void Start()
     {
-        // Configurar el estado inicial: solo se ve el panel de bienvenida
+        // Mostrar la pantalla principal
         ShowWelcomePanel();
 
         // Asignar funciones a los botones de navegación
@@ -78,7 +80,7 @@ public class AuthManager : MonoBehaviour
     }
 
 
-    // --- Funciones de Navegación de Paneles ---
+    // Funciones de Navegación
 
     private void ShowWelcomePanel()
     {
@@ -104,22 +106,100 @@ public class AuthManager : MonoBehaviour
         ClearErrorText();
     }
 
-    // --- Funciones de Lógica (Firebase irá aquí) ---
+    // Funciones de Lógica
 
-    private void HandleLogin()
+    private async void HandleLogin()
     {
+        ClearErrorText(); // Limpia errores anteriores
+
         // Leer el texto de los campos de login
         string username = usernameLoginInput.text;
         string password = passwordLoginInput.text;
 
-        Debug.Log($"Intentando login con: Usuario={username}, Pass={password}");
-
-        // --- PRÓXIMAMENTE: Aquí llamaremos a Firebase para el Login ---
-
-        // Campos vacíos
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
             ShowError("El usuario y la contraseña no pueden estar vacíos.");
+            return;
+        }
+
+        Debug.Log("Iniciando Login...");
+        ShowError("Iniciando sesión...");
+
+        try
+        {
+            // Buscamos el usuario con el usuario introducido
+            QuerySnapshot usernameQuery = await db.Collection("usuarios").WhereEqualTo("username", username).Limit(1).GetSnapshotAsync();
+
+            if (usernameQuery.Count == 0)
+            {
+                // Si no devuelve ningún usuario
+                ShowError("Nombre de usuario o contraseña incorrectos.");
+            }
+            else
+            {
+
+                // Obtenemos el documento/usuario correspondiente a ese nombre de usuario
+                DocumentSnapshot userDoc = usernameQuery.Documents.FirstOrDefault();
+                string email = userDoc.GetValue<string>("email");
+
+                Debug.Log($"LOGIN[mail: '{email}' y Pass: '{password}']");
+
+                // Iniciar sesión usando el email recogido con el nombre de usuario y la contraseña
+                AuthResult authResult = await auth.SignInWithEmailAndPasswordAsync(email, password);
+
+                // Login correcto
+                FirebaseUser user = authResult.User;
+                Debug.Log($"Login exitoso: {user.Email} (UID: {user.UserId})");
+
+                //Comprobar ROL
+                string role = userDoc.GetValue<string>("role");
+
+                if (role == "Admin")
+                {
+                    Debug.Log("Acceso de Administrador Concedido.");
+                    ShowError("¡Bienvenido Admin!");
+                }
+                else
+                {
+                    Debug.Log("Acceso de Jugador Concedido.");
+                    ShowError($"¡Bienvenido {username}!");
+                }
+
+                // Cargar la escena
+                SceneManager.LoadScene("DashboardScene");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            // Intentamos convertir el error en un error específico de Firebase
+            FirebaseException firebaseEx = ex.GetBaseException() as FirebaseException;
+
+            if (firebaseEx != null)
+            {
+                // Si es un error de Firebase, leemos su código
+                AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+                
+                
+                Debug.LogError($"[DEBUG] Código de error de Firebase: {errorCode.ToString()} ({firebaseEx.ErrorCode})");
+
+
+                // Comprobamos si el error fue por contraseña incorrecta
+                if (errorCode == AuthError.WrongPassword)
+                {
+                    ShowError("Nombre de usuario o contraseña incorrectos.");
+                }
+                else
+                {
+                    Debug.LogError($"Error de Firebase en el login: {firebaseEx.Message}");
+                    ShowError("Error al conectar. Inténtalo más tarde.");
+                }
+            }
+            else
+            {
+                Debug.LogError($"Error en el login: {ex.Message}");
+                ShowError("Ha ocurrido un error inesperado.");
+            }
+
         }
     }
 
@@ -132,7 +212,7 @@ public class AuthManager : MonoBehaviour
         string email = emailRegisterInput.text;
         string password = passwordRegisterInput.text;
 
-        // --- 1. Validación de campos (local) ---
+        // Validación de campos
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
             ShowError("Todos los campos son obligatorios.");
@@ -165,7 +245,7 @@ public class AuthManager : MonoBehaviour
                 return;
             }
 
-            //Crear el usuario con Firebase Authentication
+            // Crear el usuario con Firebase Authentication
             // Esto crea el usuario solo con Email y Contraseña
             Task<AuthResult> registerTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
 
@@ -219,7 +299,13 @@ public class AuthManager : MonoBehaviour
             await db.Collection("usuarios").Document(id).SetAsync(datosPerfil);
 
             Debug.Log("Datos del perfil guardados en Firestore.");
+
+            ShowLoginPanel();
+            usernameLoginInput.text = username;
+
             ShowError($"¡Registro exitoso! Bienvenido, {username}");
+
+
 
             // --- PRÓXIMAMENTE: 
             // Aquí es donde, en lugar de mostrar un error, 

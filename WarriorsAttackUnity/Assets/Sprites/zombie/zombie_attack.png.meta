@@ -127,6 +127,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -297,7 +310,14 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      zombie_attack_0: -740790965210288447
+      zombie_attack_1: -7199097879010782113
+      zombie_attack_2: -301634997788585293
+      zombie_attack_3: -5708923512371970796
+      zombie_attack_4: 3570965200677785207
+      zombie_attack_5: 6865893561633628528
+      zombie_attack_6: 9201884942576240492
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
