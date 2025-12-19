@@ -70,9 +70,12 @@ public class DashboardManager : MonoBehaviour
             return;
         }
 
-        // Botones básicos
+        // Botones básicos (Logout)
         logoutButton.onClick.AddListener(LogOut);
         adminLogoutButton.onClick.AddListener(LogOut);
+
+        // Boton jugar
+        if (playButton != null) playButton.onClick.AddListener(GoToGameScene);
 
         // Botones de Ranking
         if (openRankingButton != null) openRankingButton.onClick.AddListener(LoadAndShowRanking);
@@ -85,7 +88,7 @@ public class DashboardManager : MonoBehaviour
         cancelEditButton.onClick.AddListener(ClosePopups);
         if (resetPasswordButton != null) resetPasswordButton.onClick.AddListener(SendResetEmail);
 
-        //Con este comando, recargamos la busqueda cada vez que insertamos un caracter
+        // Buscador
         if (searchInput != null) searchInput.onValueChanged.AddListener(delegate { LoadAllUsers(); });
 
         LoadUserData();
@@ -329,6 +332,12 @@ public class DashboardManager : MonoBehaviour
         {
             Debug.LogError($"Error al cargar ranking: {ex.Message}");
         }
+    }
+
+    // Función para empezar partida
+    private void GoToGameScene()
+    {
+        SceneManager.LoadScene("GameScene");
     }
 
     private void CloseRanking()

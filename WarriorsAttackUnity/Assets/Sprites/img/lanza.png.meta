@@ -1,28 +1,46 @@
 fileFormatVersion: 2
-guid: 1dbd52de11e4cc0408a7ebbf34979e83
+guid: 481b34d191fcc95428436eaf294e7f24
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -740790965210288447
-    second: zombie_attack_0
+      213: -2685228523555409179
+    second: lanza_0
   - first:
-      213: -7199097879010782113
-    second: zombie_attack_1
+      213: -2646890648376237695
+    second: lanza_1
   - first:
-      213: -301634997788585293
-    second: zombie_attack_2
+      213: -61688023027261140
+    second: lanza_2
   - first:
-      213: -5708923512371970796
-    second: zombie_attack_3
+      213: 8198989136348693914
+    second: lanza_3
   - first:
-      213: 3570965200677785207
-    second: zombie_attack_4
+      213: -8938472355828805333
+    second: lanza_4
   - first:
-      213: 6865893561633628528
-    second: zombie_attack_5
+      213: -4417735152043089661
+    second: lanza_5
   - first:
-      213: 9201884942576240492
-    second: zombie_attack_6
+      213: -697912593536996088
+    second: lanza_6
+  - first:
+      213: -1186131054374928670
+    second: lanza_7
+  - first:
+      213: -6427636387911020798
+    second: lanza_8
+  - first:
+      213: 1707855140774696098
+    second: lanza_9
+  - first:
+      213: 5404073032033549104
+    second: lanza_10
+  - first:
+      213: -8395293954139481704
+    second: lanza_11
+  - first:
+      213: 5161976414818944987
+    second: lanza_12
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -115,7 +133,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
+    buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -128,7 +146,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: Android
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -144,100 +162,34 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: zombie_attack_0
+      name: lanza_0
       rect:
         serializedVersion: 2
-        x: 14
-        y: 11
-        width: 19
-        height: 40
+        x: 27
+        y: 301
+        width: 157
+        height: 88
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1ce62d1ca8e28b5f0800000000000000
-      internalID: -740790965210288447
+      spriteID: b9b7b4c6c13ca1c4b9179f85c3345a3e
+      internalID: -2086114960
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zombie_attack_1
+      name: lanza_1
       rect:
         serializedVersion: 2
-        x: 74
-        y: 11
-        width: 33
-        height: 40
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f545b4a1f9aa71c90800000000000000
-      internalID: -7199097879010782113
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: zombie_attack_2
-      rect:
-        serializedVersion: 2
-        x: 141
-        y: 11
-        width: 34
-        height: 40
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3b25cf0519060dbf0800000000000000
-      internalID: -301634997788585293
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: zombie_attack_3
-      rect:
-        serializedVersion: 2
-        x: 206
-        y: 11
-        width: 41
-        height: 38
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 41d713b0054d5c0b0800000000000000
-      internalID: -5708923512371970796
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: zombie_attack_4
-      rect:
-        serializedVersion: 2
-        x: 269
-        y: 11
-        width: 34
+        x: 214
+        y: 331
+        width: 178
         height: 36
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -245,54 +197,186 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 77e4ea32eed9e8130800000000000000
-      internalID: 3570965200677785207
+      spriteID: 4884985a8b1387042b71c43d2a2dd8ce
+      internalID: -1560040972
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zombie_attack_5
+      name: lanza_3
       rect:
         serializedVersion: 2
-        x: 334
-        y: 11
-        width: 30
-        height: 40
+        x: 413
+        y: 328
+        width: 175
+        height: 28
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07160d631dd884f50800000000000000
-      internalID: 6865893561633628528
+      spriteID: 59646838a3b97d04aa490dd58f05dfe8
+      internalID: 1873294137
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zombie_attack_6
+      name: lanza_4
       rect:
         serializedVersion: 2
-        x: 397
-        y: 11
-        width: 15
-        height: 46
+        x: 27
+        y: 169
+        width: 157
+        height: 83
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c67c5420a99a3bf70800000000000000
-      internalID: 9201884942576240492
+      spriteID: 69eac96202279254180a4c6455edc35d
+      internalID: -518510546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lanza_5
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 190
+        width: 166
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 671a5c71a39aed04b8c07703154f9ab6
+      internalID: 26700194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lanza_6
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 179
+        width: 168
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcdfcb214acac5a4b8e2ad57bd913320
+      internalID: 1595660907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lanza_8
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 185
+        width: 11
+        height: 5
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44b7e8603e586b04f952e3cc87935a96
+      internalID: -289403812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lanza_9
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 34
+        width: 155
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4aa8e47a73a78c441b2a74dcabc2106b
+      internalID: -1140259836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lanza_10
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 14
+        width: 164
+        height: 121
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aaff9c3c2e0110f419fe3f4cd07529d9
+      internalID: 1618948368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lanza_12
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 25
+        width: 116
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b96947f3d32cb44b8a42d160909f2e3
+      internalID: 1623555600
       vertices: []
       indices: 
       edges: []
@@ -301,7 +385,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 427b7d662bb20184f9c9901cbb0f9ace
     internalID: 0
     vertices: []
     indices: 
@@ -311,13 +395,19 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      zombie_attack_0: -740790965210288447
-      zombie_attack_1: -7199097879010782113
-      zombie_attack_2: -301634997788585293
-      zombie_attack_3: -5708923512371970796
-      zombie_attack_4: 3570965200677785207
-      zombie_attack_5: 6865893561633628528
-      zombie_attack_6: 9201884942576240492
+      lanza_0: -2086114960
+      lanza_1: -1560040972
+      lanza_10: 1618948368
+      lanza_11: 940910872
+      lanza_12: 1623555600
+      lanza_2: -752057175
+      lanza_3: 1873294137
+      lanza_4: -518510546
+      lanza_5: 26700194
+      lanza_6: 1595660907
+      lanza_7: -217657818
+      lanza_8: -289403812
+      lanza_9: -1140259836
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,19 +1,28 @@
 fileFormatVersion: 2
-guid: bf8649ba657f1274597900b937d0f6df
+guid: b616d39d912e31547ac9d60601983a01
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2458655268691813589
-    second: idle_zombie_0
+      213: -3409008278744656228
+    second: zombie_dead_0
   - first:
-      213: -6067742095595868294
-    second: idle_zombie_1
+      213: 1588550046373795996
+    second: zombie_dead_1
   - first:
-      213: 3934691101716623663
-    second: idle_zombie_2
+      213: -6099074443196265673
+    second: zombie_dead_2
   - first:
-      213: -7104688678746431885
-    second: idle_zombie_3
+      213: -2712062411477123193
+    second: zombie_dead_3
+  - first:
+      213: -8821839649128966827
+    second: zombie_dead_4
+  - first:
+      213: -400965882588184497
+    second: zombie_dead_5
+  - first:
+      213: 841376035165136844
+    second: zombie_dead_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -135,89 +144,155 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: idle_zombie_0
+      name: zombie_dead_0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 13
-        width: 17
+        x: 23
+        y: 11
+        width: 26
         height: 42
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b2b5b744f0a11edd0800000000000000
-      internalID: -2458655268691813589
+      spriteID: c961f0d3805c0b0d0800000000000000
+      internalID: -3409008278744656228
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_zombie_1
+      name: zombie_dead_1
       rect:
         serializedVersion: 2
-        x: 88
-        y: 13
-        width: 17
-        height: 43
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 87
+        y: 11
+        width: 25
+        height: 42
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a7fe25b56bc0bcba0800000000000000
-      internalID: -6067742095595868294
+      spriteID: c985a06c9d9ab0610800000000000000
+      internalID: 1588550046373795996
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_zombie_2
+      name: zombie_dead_2
       rect:
         serializedVersion: 2
-        x: 152
+        x: 140
         y: 13
-        width: 17
-        height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 34
+        height: 36
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f21b5bac5b4da9630800000000000000
-      internalID: 3934691101716623663
+      spriteID: 73b8f92bb1cbb5ba0800000000000000
+      internalID: -6099074443196265673
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_zombie_3
+      name: zombie_dead_3
       rect:
         serializedVersion: 2
-        x: 216
-        y: 13
-        width: 17
-        height: 43
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 208
+        y: 18
+        width: 35
+        height: 35
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 37e5497f943176d90800000000000000
-      internalID: -7104688678746431885
+      spriteID: 78f773b1b91dc5ad0800000000000000
+      internalID: -2712062411477123193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_dead_4
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 24
+        width: 33
+        height: 29
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55516384497829580800000000000000
+      internalID: -8821839649128966827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_dead_5
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 24
+        width: 41
+        height: 21
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f40c74977ab7f6af0800000000000000
+      internalID: -400965882588184497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_dead_6
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 22
+        width: 42
+        height: 16
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc76b82db0b2dab00800000000000000
+      internalID: 841376035165136844
       vertices: []
       indices: 
       edges: []
@@ -226,7 +301,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 9a78c98916b8b8347a63791cd3946b94
     internalID: 0
     vertices: []
     indices: 
@@ -236,10 +311,13 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      idle_zombie_0: -2458655268691813589
-      idle_zombie_1: -6067742095595868294
-      idle_zombie_2: 3934691101716623663
-      idle_zombie_3: -7104688678746431885
+      zombie_dead_0: -3409008278744656228
+      zombie_dead_1: 1588550046373795996
+      zombie_dead_2: -6099074443196265673
+      zombie_dead_3: -2712062411477123193
+      zombie_dead_4: -8821839649128966827
+      zombie_dead_5: -400965882588184497
+      zombie_dead_6: 841376035165136844
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

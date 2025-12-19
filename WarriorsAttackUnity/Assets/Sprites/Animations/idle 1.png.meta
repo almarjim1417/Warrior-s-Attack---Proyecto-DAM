@@ -1,25 +1,19 @@
 fileFormatVersion: 2
-guid: af801c0b40c8fc04c9d7011de9e3670d
+guid: 152c32e8c709fa548ad52fffb9aed15b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4842648881989047085
-    second: zombie_hurt_0
+      213: 8793639957104055765
+    second: idle_0
   - first:
-      213: 3832706520647033765
-    second: zombie_hurt_1
+      213: 6084859605308855041
+    second: idle_1
   - first:
-      213: 3041285703631497951
-    second: zombie_hurt_2
+      213: 8603369663158992956
+    second: idle_2
   - first:
-      213: 3929213222507703146
-    second: zombie_hurt_3
-  - first:
-      213: 6418200714439953496
-    second: zombie_hurt_4
-  - first:
-      213: 8960219196534502953
-    second: zombie_hurt_5
+      213: -5906421172241655209
+    second: idle_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -141,13 +135,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: zombie_hurt_0
+      name: idle_0
       rect:
         serializedVersion: 2
         x: 24
-        y: 13
-        width: 22
-        height: 39
+        y: 11
+        width: 17
+        height: 45
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -156,108 +150,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d2356ee208b843340800000000000000
-      internalID: 4842648881989047085
+      spriteID: 5d55ed543f8490a70800000000000000
+      internalID: 8793639957104055765
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zombie_hurt_1
+      name: idle_1
       rect:
         serializedVersion: 2
-        x: 89
-        y: 13
-        width: 21
-        height: 40
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5a36d732642803530800000000000000
-      internalID: 3832706520647033765
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: zombie_hurt_2
-      rect:
-        serializedVersion: 2
-        x: 143
-        y: 13
-        width: 30
-        height: 37
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fdaed69eb31d43a20800000000000000
-      internalID: 3041285703631497951
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: zombie_hurt_3
-      rect:
-        serializedVersion: 2
-        x: 208
-        y: 13
-        width: 29
-        height: 36
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a6be656ab9e578630800000000000000
-      internalID: 3929213222507703146
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: zombie_hurt_4
-      rect:
-        serializedVersion: 2
-        x: 276
-        y: 13
-        width: 26
-        height: 38
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 85c0a517b87021950800000000000000
-      internalID: 6418200714439953496
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: zombie_hurt_5
-      rect:
-        serializedVersion: 2
-        x: 346
+        x: 88
         y: 12
-        width: 20
-        height: 38
+        width: 17
+        height: 46
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -266,8 +172,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 926331fc2e7195c70800000000000000
-      internalID: 8960219196534502953
+      spriteID: 103de827293c17450800000000000000
+      internalID: 6084859605308855041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: idle_2
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 12
+        width: 17
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c30c6f3402f456770800000000000000
+      internalID: 8603369663158992956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: idle_3
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 12
+        width: 17
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75a90b6cc3d280ea0800000000000000
+      internalID: -5906421172241655209
       vertices: []
       indices: 
       edges: []
@@ -286,12 +236,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      zombie_hurt_0: 4842648881989047085
-      zombie_hurt_1: 3832706520647033765
-      zombie_hurt_2: 3041285703631497951
-      zombie_hurt_3: 3929213222507703146
-      zombie_hurt_4: 6418200714439953496
-      zombie_hurt_5: 8960219196534502953
+      idle_0: 8793639957104055765
+      idle_1: 6084859605308855041
+      idle_2: 8603369663158992956
+      idle_3: -5906421172241655209
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
