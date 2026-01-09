@@ -1,0 +1,643 @@
+fileFormatVersion: 2
+guid: 3f79817c1246f1d4c842c188d47d0959
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5741306532041363421
+    second: DecoracionSuelo_0
+  - first:
+      213: -1760476590461614513
+    second: DecoracionSuelo_1
+  - first:
+      213: 3818070702401700656
+    second: DecoracionSuelo_2
+  - first:
+      213: -7888196434862473041
+    second: DecoracionSuelo_3
+  - first:
+      213: -1904449523647811558
+    second: DecoracionSuelo_4
+  - first:
+      213: -1198113303345532730
+    second: DecoracionSuelo_5
+  - first:
+      213: 7353761251440561050
+    second: DecoracionSuelo_6
+  - first:
+      213: 7011314733975328260
+    second: DecoracionSuelo_7
+  - first:
+      213: -6089928504822112896
+    second: DecoracionSuelo_8
+  - first:
+      213: -7385536340670519112
+    second: DecoracionSuelo_9
+  - first:
+      213: 6646641825625913318
+    second: DecoracionSuelo_10
+  - first:
+      213: 4976053221898942449
+    second: DecoracionSuelo_11
+  - first:
+      213: -1991456395264385138
+    second: DecoracionSuelo_12
+  - first:
+      213: -1321608284588087217
+    second: DecoracionSuelo_13
+  - first:
+      213: 230002644034294820
+    second: DecoracionSuelo_14
+  - first:
+      213: -2220158163538763929
+    second: DecoracionSuelo_15
+  - first:
+      213: -737028585055141431
+    second: DecoracionSuelo_16
+  - first:
+      213: 4450724503936501850
+    second: DecoracionSuelo_17
+  - first:
+      213: -3338868884861455054
+    second: DecoracionSuelo_18
+  - first:
+      213: 2975432313013621184
+    second: DecoracionSuelo_19
+  - first:
+      213: 680821782322762409
+    second: DecoracionSuelo_20
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: DecoracionSuelo_0
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 1606
+        width: 286
+        height: 258
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddf84f44fd73daf40800000000000000
+      internalID: 5741306532041363421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_1
+      rect:
+        serializedVersion: 2
+        x: 587
+        y: 1630
+        width: 311
+        height: 284
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f46052e4ed78197e0800000000000000
+      internalID: -1760476590461614513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_2
+      rect:
+        serializedVersion: 2
+        x: 1039
+        y: 1609
+        width: 431
+        height: 177
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 033caf723138cf430800000000000000
+      internalID: 3818070702401700656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_3
+      rect:
+        serializedVersion: 2
+        x: 1594
+        y: 1611
+        width: 243
+        height: 217
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa0058dc22f778290800000000000000
+      internalID: -7888196434862473041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_4
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 1187
+        width: 304
+        height: 292
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a107f4a9f390295e0800000000000000
+      internalID: -1904449523647811558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_5
+      rect:
+        serializedVersion: 2
+        x: 586
+        y: 1192
+        width: 398
+        height: 337
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c07b696c427f5fe0800000000000000
+      internalID: -1198113303345532730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_6
+      rect:
+        serializedVersion: 2
+        x: 1075
+        y: 1200
+        width: 379
+        height: 244
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9b852375eecd0660800000000000000
+      internalID: 7353761251440561050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_7
+      rect:
+        serializedVersion: 2
+        x: 1578
+        y: 1192
+        width: 269
+        height: 193
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 406df0f5a913d4160800000000000000
+      internalID: 7011314733975328260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_8
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 783
+        width: 389
+        height: 296
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08d5d8a6a4a3c7ba0800000000000000
+      internalID: -6089928504822112896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_9
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 791
+        width: 347
+        height: 243
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b8689214dd418990800000000000000
+      internalID: -7385536340670519112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_10
+      rect:
+        serializedVersion: 2
+        x: 1038
+        y: 800
+        width: 175
+        height: 150
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e7bfa5668d9d3c50800000000000000
+      internalID: 6646641825625913318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_11
+      rect:
+        serializedVersion: 2
+        x: 1269
+        y: 800
+        width: 253
+        height: 158
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f779b28a0e7e0540800000000000000
+      internalID: 4976053221898942449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_12
+      rect:
+        serializedVersion: 2
+        x: 1559
+        y: 551
+        width: 347
+        height: 297
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8f169ea5fcec54e0800000000000000
+      internalID: -1991456395264385138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_13
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 459
+        width: 283
+        height: 210
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f48e9e07444b8ade0800000000000000
+      internalID: -1321608284588087217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_15
+      rect:
+        serializedVersion: 2
+        x: 604
+        y: 484
+        width: 345
+        height: 175
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76f9615c9e96031e0800000000000000
+      internalID: -2220158163538763929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_16
+      rect:
+        serializedVersion: 2
+        x: 1133
+        y: 467
+        width: 346
+        height: 218
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c1ca76286c85c5f0800000000000000
+      internalID: -737028585055141431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_18
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 156
+        width: 500
+        height: 205
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2357a367074f9a1d0800000000000000
+      internalID: -3338868884861455054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_19
+      rect:
+        serializedVersion: 2
+        x: 766
+        y: 117
+        width: 593
+        height: 260
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c155669cebda4920800000000000000
+      internalID: 2975432313013621184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DecoracionSuelo_20
+      rect:
+        serializedVersion: 2
+        x: 1483
+        y: 108
+        width: 423
+        height: 338
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a252bacdc3c27900800000000000000
+      internalID: 680821782322762409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d48cf2493e0a71948a9aa93e4db49064
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      DecoracionSuelo_0: 5741306532041363421
+      DecoracionSuelo_1: -1760476590461614513
+      DecoracionSuelo_10: 6646641825625913318
+      DecoracionSuelo_11: 4976053221898942449
+      DecoracionSuelo_12: -1991456395264385138
+      DecoracionSuelo_13: -1321608284588087217
+      DecoracionSuelo_15: -2220158163538763929
+      DecoracionSuelo_16: -737028585055141431
+      DecoracionSuelo_18: -3338868884861455054
+      DecoracionSuelo_19: 2975432313013621184
+      DecoracionSuelo_2: 3818070702401700656
+      DecoracionSuelo_20: 680821782322762409
+      DecoracionSuelo_3: -7888196434862473041
+      DecoracionSuelo_4: -1904449523647811558
+      DecoracionSuelo_5: -1198113303345532730
+      DecoracionSuelo_6: 7353761251440561050
+      DecoracionSuelo_7: 7011314733975328260
+      DecoracionSuelo_8: -6089928504822112896
+      DecoracionSuelo_9: -7385536340670519112
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

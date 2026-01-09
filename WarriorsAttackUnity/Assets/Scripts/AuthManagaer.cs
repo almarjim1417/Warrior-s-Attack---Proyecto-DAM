@@ -4,224 +4,136 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
-
-//Firebase
 using Firebase.Auth;
 using Firebase.Firestore;
 using System.Threading.Tasks;
 using Firebase;
 using UnityEngine.SceneManagement;
 
-
 public class AuthManager : MonoBehaviour
 {
-
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
-    [Header("--- Paneles de UI ---")]
+    [Header("UI Panels")]
     public GameObject welcomePanel;
     public GameObject loginPanel;
     public GameObject registerPanel;
 
-    [Header("--- Botones de Navegación ---")]
+    [Header("Navigation Buttons")]
     public Button goToLoginButton;
     public Button goToRegisterButton;
     public Button backFromLoginButton;
     public Button backFromRegisterButton;
 
-    [Header("--- Campos de Login ---")]
+    [Header("Login Fields")]
     public TMP_InputField usernameLoginInput;
     public TMP_InputField passwordLoginInput;
     public Button loginButton;
 
-    [Header("--- Campos de Registro ---")]
+    [Header("Register Fields")]
     public TMP_InputField usernameRegisterInput;
     public TMP_InputField emailRegisterInput;
     public TMP_InputField passwordRegisterInput;
     public Button registerButton;
 
-    [Header("--- Otros ---")]
+    [Header("Feedback")]
     public TMP_Text errorText;
-
 
     void Start()
     {
-        // Mostrar la pantalla principal
         ShowWelcomePanel();
 
-        // Asignar funciones a los botones de navegación
         goToLoginButton.onClick.AddListener(ShowLoginPanel);
         goToRegisterButton.onClick.AddListener(ShowRegisterPanel);
         backFromLoginButton.onClick.AddListener(ShowWelcomePanel);
         backFromRegisterButton.onClick.AddListener(ShowWelcomePanel);
 
-        // Asignar funciones a los botones de acción (Login y Registro)
         loginButton.onClick.AddListener(HandleLogin);
         registerButton.onClick.AddListener(HandleRegister);
-        
-        //Inizializar Firebase
-        StartCoroutine(InitializeFirebaseAndCheck());
+
+        StartCoroutine(InitializeFirebaseSequence());
     }
 
-    // Corutina para esperar a FirebaseManager
-    // Usamos corutina por eficiencia ya que esta función permite pausarse cuando lo deseemos y
-    // como lo vamos a usar para esperar a que el otro script realice la conexión con firebase, es lo más eficiente.
-    private IEnumerator InitializeFirebaseAndCheck()
+    private IEnumerator InitializeFirebaseSequence()
     {
-        // Espera hasta que la variable 'isFirebaseReady' 
-        // del otro script sea 'true'
         yield return new WaitUntil(() => FirebaseManager.isFirebaseReady);
 
-        // Cuando esté lista, guardamos las instancias
         auth = FirebaseAuth.DefaultInstance;
         db = FirebaseFirestore.DefaultInstance;
-        Debug.Log("AuthManager listo para usar Firebase.");
     }
 
+    // --- Navigation Logic ---
 
-    // Funciones de Navegación
+    private void ShowWelcomePanel() => TogglePanels(true, false, false);
+    private void ShowLoginPanel() => TogglePanels(false, true, false);
+    private void ShowRegisterPanel() => TogglePanels(false, false, true);
 
-    private void ShowWelcomePanel()
+    private void TogglePanels(bool welcome, bool login, bool register)
     {
-        welcomePanel.SetActive(true);
-        loginPanel.SetActive(false);
-        registerPanel.SetActive(false);
-        ClearErrorText();
+        welcomePanel.SetActive(welcome);
+        loginPanel.SetActive(login);
+        registerPanel.SetActive(register);
+        errorText.text = "";
     }
 
-    private void ShowLoginPanel()
-    {
-        welcomePanel.SetActive(false);
-        loginPanel.SetActive(true);
-        registerPanel.SetActive(false);
-        ClearErrorText();
-    }
-
-    private void ShowRegisterPanel()
-    {
-        welcomePanel.SetActive(false);
-        loginPanel.SetActive(false);
-        registerPanel.SetActive(true);
-        ClearErrorText();
-    }
-
-    // Funciones de Lógica
+    // --- Auth Logic ---
 
     private async void HandleLogin()
     {
-        ClearErrorText(); // Limpia errores anteriores
-
-        // Leer el texto de los campos de login
+        errorText.text = "";
         string username = usernameLoginInput.text;
         string password = passwordLoginInput.text;
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            ShowError("El usuario y la contraseña no pueden estar vacíos.");
+            ShowError("Usuario y contraseña requeridos.");
             return;
         }
 
-        Debug.Log("Iniciando Login...");
-        ShowError("Iniciando sesión...");
+        ShowError("Autenticando...");
 
         try
         {
-            // Buscamos el usuario con el usuario introducido
-            QuerySnapshot usernameQuery = await db.Collection("usuarios").WhereEqualTo("username", username).Limit(1).GetSnapshotAsync();
+            // 1. Resolver Email a partir del Username
+            QuerySnapshot usernameQuery = await db.Collection("usuarios")
+                .WhereEqualTo("username", username)
+                .Limit(1)
+                .GetSnapshotAsync();
 
             if (usernameQuery.Count == 0)
             {
-                // Si no devuelve ningún usuario
-                ShowError("Nombre de usuario o contraseña incorrectos.");
+                ShowError("Credenciales inválidas.");
+                return;
             }
-            else
-            {
 
-                // Obtenemos el documento/usuario correspondiente a ese nombre de usuario
-                DocumentSnapshot userDoc = usernameQuery.Documents.FirstOrDefault();
-                string email = userDoc.GetValue<string>("email");
+            DocumentSnapshot userDoc = usernameQuery.Documents.FirstOrDefault();
+            string email = userDoc.GetValue<string>("email");
+            string role = userDoc.GetValue<string>("role");
 
-                Debug.Log($"LOGIN[mail: '{email}' y Pass: '{password}']");
+            // 2. Autenticación contra Firebase Auth
+            AuthResult authResult = await auth.SignInWithEmailAndPasswordAsync(email, password);
+            FirebaseUser user = authResult.User;
 
-                // Iniciar sesión usando el email recogido con el nombre de usuario y la contraseña
-                AuthResult authResult = await auth.SignInWithEmailAndPasswordAsync(email, password);
-
-                // Login correcto
-                FirebaseUser user = authResult.User;
-                Debug.Log($"Login exitoso: {user.Email} (UID: {user.UserId})");
-
-                //Comprobar ROL
-                string role = userDoc.GetValue<string>("role");
-
-                if (role == "Admin")
-                {
-                    Debug.Log("Acceso de Administrador Concedido.");
-                    ShowError("¡Bienvenido Admin!");
-                }
-                else
-                {
-                    Debug.Log("Acceso de Jugador Concedido.");
-                    ShowError($"¡Bienvenido {username}!");
-                }
-
-                // Cargar la escena
-                SceneManager.LoadScene("DashboardScene");
-            }
+            Debug.Log($"Login exitoso: {user.UserId} ({role})");
+            SceneManager.LoadScene("DashboardScene");
         }
         catch (System.Exception ex)
         {
-            // Intentamos convertir el error en un error específico de Firebase
-            FirebaseException firebaseEx = ex.GetBaseException() as FirebaseException;
-
-            if (firebaseEx != null)
-            {
-                // Si es un error de Firebase, leemos su código
-                AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
-                
-                
-                Debug.LogError($"[DEBUG] Código de error de Firebase: {errorCode.ToString()} ({firebaseEx.ErrorCode})");
-
-
-                // Comprobamos si el error fue por contraseña incorrecta
-                if (errorCode == AuthError.WrongPassword)
-                {
-                    ShowError("Nombre de usuario o contraseña incorrectos.");
-                }
-                else
-                {
-                    Debug.LogError($"Error de Firebase en el login: {firebaseEx.Message}");
-                    ShowError("Error al conectar. Inténtalo más tarde.");
-                }
-            }
-            else
-            {
-                Debug.LogError($"Error en el login: {ex.Message}");
-                ShowError("Ha ocurrido un error inesperado.");
-            }
-
+            HandleFirebaseError(ex);
         }
     }
 
     private async void HandleRegister()
     {
-        ClearErrorText(); // Limpia errores anteriores
-
-        //Recoge los campos del register
+        errorText.text = "";
         string username = usernameRegisterInput.text;
         string email = emailRegisterInput.text;
         string password = passwordRegisterInput.text;
 
-        // Validación de campos
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
             ShowError("Todos los campos son obligatorios.");
-            return;
-        }
-
-        if (!email.Contains("@"))
-        {
-            ShowError("El formato del correo electrónico no es válido.");
             return;
         }
 
@@ -231,60 +143,32 @@ public class AuthManager : MonoBehaviour
             return;
         }
 
-        Debug.Log("Iniciando registro en Firebase...");
-        ShowError("Registrando...");
+        ShowError("Creando cuenta...");
 
         try
         {
-            // Comprobar si el 'username' ya existe en la BD y si existe mostramos el error
-            QuerySnapshot usernameQuery = await db.Collection("usuarios").WhereEqualTo("username", username).Limit(1).GetSnapshotAsync();
+            // 1. Verificar unicidad del Username
+            QuerySnapshot usernameQuery = await db.Collection("usuarios")
+                .WhereEqualTo("username", username)
+                .Limit(1)
+                .GetSnapshotAsync();
 
             if (usernameQuery.Count > 0)
             {
-                ShowError("Ese nombre de usuario ya está en uso.");
+                ShowError("El nombre de usuario ya existe.");
                 return;
             }
 
-            // Crear el usuario con Firebase Authentication
-            // Esto crea el usuario solo con Email y Contraseña
+            // 2. Crear usuario en Auth
             Task<AuthResult> registerTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
-
-            // Esperamos a que la tarea termine (ya que al ser una bd en la nube puede tardar un poco más)
             await registerTask;
 
-            // Si la creación del usuario falla mediante el sistema Auth, notificamos al usuario
-            if (registerTask.IsFaulted)
-            {
-                FirebaseException firebaseEx = registerTask.Exception.GetBaseException() as FirebaseException;
-                AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+            if (registerTask.IsFaulted) throw registerTask.Exception;
 
-                string message = "Error desconocido al registrar.";
-                if (errorCode == AuthError.EmailAlreadyInUse)
-                {
-                    message = "Este correo electrónico ya está registrado.";
-                }
-                else if (errorCode == AuthError.InvalidEmail)
-                {
-                    message = "El correo electrónico no es válido.";
-                }
-                ShowError(message);
-                return;
-            }
+            string userId = registerTask.Result.User.UserId;
 
-            // Usuario creado con éxito
-            string id = registerTask.Result.User.UserId; // Obtenemos el ID del usuario
-            Debug.Log($"Usuario creado en Auth con ID: {id}");
-
-            // Diccionario para la ficha del jugador
-            Dictionary<string, object> datosPerfil = new Dictionary<string, object>
-            {
-                { "username", username },
-                { "email", email },
-                { "role", "Jugador" } // Rol por defecto jugador
-            };
-
-            // Diccionario para las estadísticas iniciales
-            Dictionary<string, object> estadisticas = new Dictionary<string, object>
+            // 3. Crear documento de usuario en Firestore
+            Dictionary<string, object> userStats = new Dictionary<string, object>
             {
                 { "total_kills", 0 },
                 { "total_wins", 0 },
@@ -292,44 +176,56 @@ public class AuthManager : MonoBehaviour
                 { "best_score", 0 }
             };
 
-            // Añadimos las estadisticas al perfil
-            datosPerfil.Add("stats", estadisticas);
+            Dictionary<string, object> userProfile = new Dictionary<string, object>
+            {
+                { "username", username },
+                { "email", email },
+                { "role", "Jugador" },
+                { "stats", userStats }
+            };
 
-            // En la colección usuarios, el usuario con id "id", añade los datos recogidos
-            await db.Collection("usuarios").Document(id).SetAsync(datosPerfil);
-
-            Debug.Log("Datos del perfil guardados en Firestore.");
+            await db.Collection("usuarios").Document(userId).SetAsync(userProfile);
 
             ShowLoginPanel();
             usernameLoginInput.text = username;
-
-            ShowError($"¡Registro exitoso! Bienvenido, {username}");
-
-
-
-            // --- PRÓXIMAMENTE: 
-            // Aquí es donde, en lugar de mostrar un error, 
-            // cargaríamos la escena del Dashboard.
-            // SceneManager.LoadScene("DashboardScene");
-
+            ShowError("Cuenta creada. Por favor inicia sesión.");
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"Error en el registro: {ex.Message}");
-            ShowError("Ha ocurrido un error inesperado.");
+            HandleFirebaseError(ex);
         }
     }
 
-
-    // Errores
-
-    private void ShowError(string message)
+    private void HandleFirebaseError(System.Exception ex)
     {
-        errorText.text = message;
+        FirebaseException firebaseEx = ex.GetBaseException() as FirebaseException;
+        if (firebaseEx != null)
+        {
+            AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+            switch (errorCode)
+            {
+                case AuthError.WrongPassword:
+                case AuthError.UserNotFound:
+                    ShowError("Credenciales incorrectas.");
+                    break;
+                case AuthError.EmailAlreadyInUse:
+                    ShowError("El correo ya está registrado.");
+                    break;
+                case AuthError.InvalidEmail:
+                    ShowError("Correo inválido.");
+                    break;
+                default:
+                    ShowError("Error de conexión.");
+                    Debug.LogError($"Firebase Error: {errorCode}");
+                    break;
+            }
+        }
+        else
+        {
+            ShowError("Error desconocido.");
+            Debug.LogError(ex.Message);
+        }
     }
 
-    private void ClearErrorText()
-    {
-        errorText.text = "";
-    }
+    private void ShowError(string msg) => errorText.text = msg;
 }

@@ -132,7 +132,7 @@ public class DashboardManager : MonoBehaviour
 
         playerStatsText.text = $"Total de Kills: {kills}\n\n" +
                                $"Total de Victorias: {wins}\n\n" +
-                               $"Mejor Puntuación: {score}";
+                               $"Puntuación Total: {score}";
     }
 
     private void ShowAdmin(string name)

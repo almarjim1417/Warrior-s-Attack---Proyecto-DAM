@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f2f100fc2f4b7374abe53fdf88a6d7a9
+guid: a7a2da2655b558348927b6c8a801ccc7
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -55,7 +55,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -115,7 +115,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
+    buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -128,7 +128,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: Android
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -147,12 +147,12 @@ TextureImporter:
       name: boss_dead_0
       rect:
         serializedVersion: 2
-        x: 17
-        y: 12
-        width: 30
-        height: 40
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 22
+        y: 10
+        width: 43
+        height: 71
+      alignment: 9
+      pivot: {x: 0.5, y: 0.55}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: boss_dead_1
       rect:
         serializedVersion: 2
-        x: 81
-        y: 13
-        width: 29
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 118
+        y: 12
+        width: 43
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.55}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: boss_dead_2
       rect:
         serializedVersion: 2
-        x: 137
-        y: 13
-        width: 41
-        height: 40
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 216
+        y: 12
+        width: 53
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.55}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -213,12 +213,12 @@ TextureImporter:
       name: boss_dead_3
       rect:
         serializedVersion: 2
-        x: 205
-        y: 18
-        width: 41
-        height: 35
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 305
+        y: 15
+        width: 57
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -235,12 +235,12 @@ TextureImporter:
       name: boss_dead_4
       rect:
         serializedVersion: 2
-        x: 266
-        y: 26
-        width: 39
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 399
+        y: 24
+        width: 61
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.7}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -257,12 +257,12 @@ TextureImporter:
       name: boss_dead_5
       rect:
         serializedVersion: 2
-        x: 329
-        y: 28
-        width: 42
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 495
+        y: 17
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -279,12 +279,12 @@ TextureImporter:
       name: boss_dead_6
       rect:
         serializedVersion: 2
-        x: 393
-        y: 24
-        width: 40
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 590
+        y: 26
+        width: 72
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 1.3}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -301,7 +301,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5639d3ff89da63b4a8d63dfc1a4f6f4c
     internalID: 0
     vertices: []
     indices: 

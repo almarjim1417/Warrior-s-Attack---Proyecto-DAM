@@ -3,139 +3,164 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    // Selector para el tipo de enemigo
     public enum EnemyType { Zombie, Stalker }
     public EnemyType enemyType;
 
-    [Header("Estadísticas")]
-    public float patrolSpeed = 2f;    // Velocidad Zombie
-    public float chaseSpeed = 6f;     // Velocidad Stalker
+    [Header("Estadísticas Comunes")]
     public int maxHealth = 3;
     private int currentHealth;
+    public int damage = 1;
+    private Rigidbody2D rb;
+    private Animator anim;
+    private bool movingRight = true;
+    private bool isDead = false;
 
-
-    [Header("Detección")]
-    public float aggroRange = 5f;     // A qué distancia nos detecta
-    public Transform player;
-
-    [Header("Patrulla (Configuración)")]
+    [Header("Configuración ZOMBIE")]
+    public float patrolSpeed = 2f;
     public float patrolDistance = 3f;
-    private Vector2 startPosition;    // Donde nacío el zombie
-
-    [Header("Choques (Paredes reales)")]
+    private Vector2 startPosition;
     public Transform wallCheckPoint;
     public float wallCheckDistance = 0.5f;
     public LayerMask whatIsGround;
 
+    [Header("Configuración STALKER")]
+    public float chaseSpeed = 5f;
+    public float aggroRange = 6f;
+    public float attackRange = 1.5f;
+    public Transform player;
+
+    [Header("Detección de Caídas (Stalker)")]
+    public Transform ledgeCheckPoint;
+    public bool avoidFalls = true;
+
     [Header("Combate")]
-    public int damage = 1;
-    public float attackRate = 1.5f; // Tiempo entre ataques
-    private float nextAttackTime = 0f;
-
-    public float timeToHit = 0.3f; // Tiempo desde que inicia la anim hasta que Muerde
-
-    private Rigidbody2D rb;
-    private Animator anim;
-    private bool movingRight = true;
-    private bool isChasing = false;   // Comprobamos si nos ha detectado
+    public float timeToHit = 0.3f;
     private bool isAttacking = false;
+    private bool isChasing = false;
+    private bool isBlocked = false;
+
+    [Header("Audio (Arrastra tus archivos aquí)")]
+    public AudioClip sound_ZombieAttack; 
+    public AudioClip sound_ZombieHurt; 
+    public AudioClip sound_StalkerDetect; 
+
+    private AudioSource audioSource;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>(); // Inicializamos el animator
-        currentHealth = maxHealth;
+        anim = GetComponent<Animator>();
 
+        audioSource = GetComponent<AudioSource>();
+
+        currentHealth = maxHealth;
         startPosition = transform.position;
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-            player = playerObj.transform;
+        if (playerObj != null) player = playerObj.transform;
     }
 
     void Update()
     {
-        if (currentHealth <= 0) return;
-
+        if (isDead) return;
         if (isAttacking)
         {
             rb.linearVelocity = Vector2.zero;
-            anim.SetBool("IsMoving", false);
             return;
         }
 
-        if (enemyType == EnemyType.Stalker)
-        {
-            CheckForPlayer(); // El Acechador busca al jugador
-        }
+        if (enemyType == EnemyType.Zombie) ZombieLogic();
+        else if (enemyType == EnemyType.Stalker) StalkerLogic();
 
-        if (isChasing)
-        {
-            ChasePlayer();
-        }
-        else
-        {
-            Patrol();
-        }
-
-        // Actualizamos si está andando para cambiar la animación
         anim.SetBool("IsMoving", Mathf.Abs(rb.linearVelocity.x) > 0.1f);
+        anim.SetBool("IsChasing", isChasing && !isBlocked);
     }
 
-    void Patrol()
+    void ZombieLogic()
     {
-        // Moverse
+        isChasing = false;
+
         float speed = movingRight ? patrolSpeed : -patrolSpeed;
         rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
 
         float distanceFromStart = transform.position.x - startPosition.x;
+        if (movingRight && distanceFromStart > patrolDistance) Flip();
+        else if (!movingRight && distanceFromStart < -patrolDistance) Flip();
 
-        if (movingRight && distanceFromStart > patrolDistance)
+        if (wallCheckPoint != null)
         {
-            Flip();
+            bool hitWall = Physics2D.Raycast(wallCheckPoint.position, transform.right, wallCheckDistance, whatIsGround);
+            if (hitWall) Flip();
         }
-        else if (!movingRight && distanceFromStart < -patrolDistance)
-        {
-            Flip();
-        }
-
-        // Si se topa con algún objeto
-        bool hitWall = Physics2D.Raycast(wallCheckPoint.position, transform.right, wallCheckDistance, whatIsGround);
-        if (hitWall)
-        {
-            Flip();
-        }
-
     }
 
-    void CheckForPlayer()
+    void StalkerLogic()
     {
         if (player == null) return;
 
-        // Calculamos la distancia entre el enemigo y el pj
+        if (!player.CompareTag("Player"))
+        {
+            rb.linearVelocity = Vector2.zero;
+            isChasing = false;
+            anim.SetBool("IsMoving", false);
+            return;
+        }
+
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        if (distanceToPlayer < aggroRange)
+        if (!isChasing)
         {
-            isChasing = true;
+            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+
+            // Si entra en rango, empieza a perseguir
+            if (distanceToPlayer < aggroRange)
+            {
+                isChasing = true;
+
+                // --- SONIDO DETECTAR (Solo Stalker) ---
+                if (audioSource != null && sound_StalkerDetect != null)
+                    audioSource.PlayOneShot(sound_StalkerDetect);
+            }
+        }
+        else
+        {
+            if (distanceToPlayer <= attackRange)
+            {
+                rb.linearVelocity = Vector2.zero;
+                StartCoroutine(PerformAttackSequence(player.gameObject));
+            }
+            else
+            {
+                isBlocked = false;
+
+                if (avoidFalls && ledgeCheckPoint != null)
+                {
+                    bool isThereGround = Physics2D.Raycast(ledgeCheckPoint.position, Vector2.down, 2f, whatIsGround);
+
+                    if (!isThereGround)
+                    {
+                        rb.linearVelocity = Vector2.zero;
+                        isBlocked = true;
+
+                        if (transform.position.x < player.position.x && !movingRight) Flip();
+                        else if (transform.position.x > player.position.x && movingRight) Flip();
+
+                        return;
+                    }
+                }
+
+                ChasePlayer();
+            }
         }
     }
 
     void ChasePlayer()
     {
-        if (player == null) return;
+        if (transform.position.x < player.position.x && !movingRight) Flip();
+        else if (transform.position.x > player.position.x && movingRight) Flip();
 
-        // Correr hacia la dcha o izqda según Lincoln
-        if (transform.position.x < player.position.x)
-        {
-            rb.linearVelocity = new Vector2(chaseSpeed, rb.linearVelocity.y);
-            if (!movingRight) Flip();
-        }
-        else
-        {
-            rb.linearVelocity = new Vector2(-chaseSpeed, rb.linearVelocity.y);
-            if (movingRight) Flip();
-        }
+        float speed = movingRight ? chaseSpeed : -chaseSpeed;
+        rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
     }
 
     void Flip()
@@ -144,91 +169,118 @@ public class EnemyController : MonoBehaviour
         transform.Rotate(0f, 180f, 0f);
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damageAmount)
     {
-        currentHealth -= damage;
+        if (isDead) return;
 
-        // Activamos el trigger de daño
-        anim.SetTrigger("Hurt");
+        currentHealth -= damageAmount;
+
+        // --- SONIDO HURT ---
+        if (audioSource != null && sound_ZombieHurt != null)
+            audioSource.PlayOneShot(sound_ZombieHurt);
 
         if (currentHealth <= 0)
         {
             Die();
         }
+        else
+        {
+            anim.SetTrigger("Hurt");
+            if (enemyType == EnemyType.Stalker) isChasing = true;
+        }
     }
 
-void Die()
+    void Die()
     {
+        isDead = true;
         anim.SetBool("IsDead", true);
+
+        if (player != null)
+        {
+            PlayerController playerScript = player.GetComponent<PlayerController>();
+            if (playerScript != null)
+            {
+                playerScript.RegistrarKill();
+            }
+        }
+
+        if (FirebaseManager.Instance != null)
+        {
+            FirebaseManager.Instance.ActualizarEstadistica("kill", 1);
+        }
+
         this.enabled = false;
 
-        // 1. CONFIGURAR LA CAJA (Pequeña y FANTASMA)
         BoxCollider2D col = GetComponent<BoxCollider2D>();
         if (col != null)
         {
-            col.size = new Vector2(1f, 0.2f);    
-            col.offset = new Vector2(0f, 0.1f); 
-            col.isTrigger = true; // <--- AQUÍ ESTÁ LA MAGIA: Ahora se atraviesa
+            col.size = new Vector2(1f, 0.2f);
+            col.offset = new Vector2(0f, -0.5f);
+            col.isTrigger = true;
         }
 
-        // 2. CONGELARLO EN EL SITIO (Para que no se caiga al ser fantasma)
-        rb.gravityScale = 0;             // Apagamos la gravedad
-        rb.linearVelocity = Vector2.zero;      // Frenamos en seco
-        rb.bodyType = RigidbodyType2D.Kinematic; // Lo convertimos en un objeto "estático"
+        rb.gravityScale = 0;
+        rb.linearVelocity = Vector2.zero;
+        rb.bodyType = RigidbodyType2D.Kinematic;
 
-        // 3. Quitamos etiquetas
         gameObject.tag = "Untagged";
-        
-        // 4. Adiós a los 2 segundos
         Destroy(gameObject, 2f);
     }
 
     void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (enemyType == EnemyType.Zombie && !isDead && !isAttacking)
         {
-            if (Time.time >= nextAttackTime)
+            if (collision.gameObject.CompareTag("Player"))
             {
-                Attack(collision.gameObject);
+                float direccionJugador = collision.transform.position.x - transform.position.x;
+
+                if (direccionJugador > 0 && !movingRight) Flip();
+                else if (direccionJugador < 0 && movingRight) Flip();
+
+                StartCoroutine(PerformAttackSequence(collision.gameObject));
             }
         }
-    }
-
-    void Attack(GameObject target)
-    {
-        if (target.transform.position.x < transform.position.x && movingRight) Flip();
-        else if (target.transform.position.x > transform.position.x && !movingRight) Flip();
-
-        nextAttackTime = Time.time + attackRate;
-
-        StartCoroutine(PerformAttackSequence(target));
     }
 
     IEnumerator PerformAttackSequence(GameObject target)
     {
         isAttacking = true;
-        rb.linearVelocity = Vector2.zero;
         anim.SetTrigger("Attack");
+
+        // --- SONIDO ATAQUE ---
+        if (audioSource != null && sound_ZombieAttack != null)
+            audioSource.PlayOneShot(sound_ZombieAttack);
 
         yield return new WaitForSeconds(timeToHit);
 
-        if (target != null)
+        if (target != null && !isDead)
         {
-            PlayerController playerScript = target.GetComponent<PlayerController>();
-
-            if (playerScript != null)
+            float dist = Vector2.Distance(transform.position, target.transform.position);
+            if (dist <= attackRange + 1f)
             {
-                playerScript.TakeDamage(damage, transform);
+                PlayerController playerScript = target.GetComponent<PlayerController>();
+                if (playerScript != null) playerScript.TakeDamage(damage, transform);
             }
         }
-
-        // Espera para terminar la animación
-        yield return new WaitForSeconds(0.1f);
-
+        yield return new WaitForSeconds(0.5f);
         isAttacking = false;
     }
 
+    void OnDrawGizmosSelected()
+    {
+        if (ledgeCheckPoint != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(ledgeCheckPoint.position, ledgeCheckPoint.position + Vector3.down * 1f);
+        }
 
-
-
+        if (enemyType == EnemyType.Stalker)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, aggroRange);
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, attackRange);
+        }
+    }
 }

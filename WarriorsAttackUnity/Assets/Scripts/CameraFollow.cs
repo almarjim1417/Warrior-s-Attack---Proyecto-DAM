@@ -4,36 +4,84 @@ public class CameraFollow : MonoBehaviour
 {
     public Transform target;
 
-    [Header("Ajustes de Posición")]
-    public float xOffset = 2f;  // Adelanto de cámara
-    public float yOffset = 1f;  // Altura extra
+    [Header("Base Settings")]
+    public float xOffset = 2f;
+    public float defaultYOffset = 1f;
+    public float defaultZoom = 7f;
+    public float followSpeed = 3f;
+    public float zoomSpeed = 2f;
 
-    [Header("Límites")]
-    public float minX = 0f;    
-    public float minY = 0f;    
+    [Header("Map Boundaries")]
+    public bool enableLimits = true;
+    public float minX = -10f;
+    public float maxX = 50f;
+    public float minY = -3f;
 
-    [Header("Suavizado")]
-    public float smoothSpeed = 0.125f; // Velocidad a la que se mueve la cámara
+    // Internal State
+    private float currentYOffset;
+    private float currentZoom;
+    private bool useFixedY = false;
+    private float fixedYPosition = 0f;
 
+    private Camera cam;
+
+    void Start()
+    {
+        cam = GetComponent<Camera>();
+        ResetCamera();
+
+        if (cam != null) cam.orthographicSize = defaultZoom;
+    }
+
+    // Usamos LateUpdate para mover la cámara DESPUÉS de que el jugador se haya movido
     void LateUpdate()
     {
-        if (target != null)
+        if (target == null) return;
+
+        // 1. Calculate X
+        float targetX = target.position.x + xOffset;
+        if (enableLimits)
         {
-            // Posición dónde queremos que esté la cámara
-            Vector3 desiredPosition = new Vector3(
-                target.position.x + xOffset,
-                target.position.y + yOffset,
-                transform.position.z
-            );
-
-            // Límites
-            float clampedX = Mathf.Clamp(desiredPosition.x, minX, 100000f);
-            float clampedY = Mathf.Clamp(desiredPosition.y, minY, 100000f);
-
-            Vector3 finalPosition = new Vector3(clampedX, clampedY, desiredPosition.z);
-
-            // Lerp mueve la cámara poco a poco
-            transform.position = Vector3.Lerp(transform.position, finalPosition, smoothSpeed);
+            targetX = Mathf.Clamp(targetX, minX, maxX);
         }
+
+        // 2. Calculate Y
+        float targetY;
+        if (useFixedY)
+        {
+            targetY = fixedYPosition;
+        }
+        else
+        {
+            targetY = target.position.y + currentYOffset;
+            if (enableLimits && targetY < minY) targetY = minY;
+        }
+
+        // 3. Smooth Move & Zoom
+        Vector3 destination = new Vector3(targetX, targetY, transform.position.z);
+        transform.position = Vector3.Lerp(transform.position, destination, followSpeed * Time.deltaTime);
+
+        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, currentZoom, zoomSpeed * Time.deltaTime);
+    }
+
+    public void EnterZone(float newZoom, float newHeight, bool lockY)
+    {
+        currentZoom = newZoom;
+        useFixedY = lockY;
+
+        if (lockY) fixedYPosition = newHeight;
+        else currentYOffset = newHeight;
+    }
+
+    public void ExitZone()
+    {
+        ResetCamera();
+    }
+
+    private void ResetCamera()
+    {
+        currentZoom = defaultZoom;
+        currentYOffset = defaultYOffset;
+        useFixedY = false;
     }
 }

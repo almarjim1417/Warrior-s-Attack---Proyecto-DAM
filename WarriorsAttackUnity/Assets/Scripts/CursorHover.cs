@@ -5,13 +5,11 @@ public class CursorHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 {
     public void OnPointerEnter(PointerEventData eventData)
     {
-        // Ponemos el cursor de texto
-        FirebaseManager.Instance.SetTextCursor();
+        FirebaseManager.Instance?.SetTextCursor();
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        // Reseteamos el cursor al cursor por defecto
-        FirebaseManager.Instance.SetDefaultCursor();
+        FirebaseManager.Instance?.SetDefaultCursor();
     }
 }

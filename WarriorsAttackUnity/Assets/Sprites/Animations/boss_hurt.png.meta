@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5f032ee2932dc0949a80c39e61506088
+guid: fa04ee7bc373de042b7db0fc1aabdbad
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -52,7 +52,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -112,7 +112,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
+    buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -125,7 +125,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: Android
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -144,12 +144,12 @@ TextureImporter:
       name: boss_hurt_0
       rect:
         serializedVersion: 2
-        x: 19
-        y: 13
-        width: 27
-        height: 40
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 24
+        y: 12
+        width: 40
+        height: 67
+      alignment: 9
+      pivot: {x: 0.5, y: 0.55}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -166,12 +166,12 @@ TextureImporter:
       name: boss_hurt_1
       rect:
         serializedVersion: 2
-        x: 85
-        y: 13
-        width: 26
-        height: 41
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 121
+        y: 12
+        width: 38
+        height: 69
+      alignment: 9
+      pivot: {x: 0.5, y: 0.55}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -188,12 +188,12 @@ TextureImporter:
       name: boss_hurt_2
       rect:
         serializedVersion: 2
-        x: 144
+        x: 222
         y: 13
-        width: 30
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 45
+        height: 63
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -210,12 +210,12 @@ TextureImporter:
       name: boss_hurt_3
       rect:
         serializedVersion: 2
-        x: 209
+        x: 318
         y: 13
-        width: 29
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 44
+        height: 63
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -232,12 +232,12 @@ TextureImporter:
       name: boss_hurt_4
       rect:
         serializedVersion: 2
-        x: 276
-        y: 13
-        width: 28
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 407
+        y: 11
+        width: 41
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.55}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -254,12 +254,12 @@ TextureImporter:
       name: boss_hurt_5
       rect:
         serializedVersion: 2
-        x: 343
-        y: 13
-        width: 24
-        height: 38
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 503
+        y: 12
+        width: 37
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -276,7 +276,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: bb0fe78ad60382d40bc8c61945bd5243
     internalID: 0
     vertices: []
     indices: 

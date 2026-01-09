@@ -1,18 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Firebase;
+using Firebase.Firestore;
+using Firebase.Auth;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class FirebaseManager : MonoBehaviour
 {
     public static FirebaseManager Instance { get; private set; }
+    public static bool isFirebaseReady = false;
 
+    [Header("Cursor Settings")]
     public Texture2D defaultCursor;
     public Texture2D textCursor;
 
-    public static bool isFirebaseReady = false;
+    private FirebaseFirestore db;
+    private FirebaseAuth auth;
 
-    // Awake se ejecuta antes que el Start
     void Awake()
     {
         if (Instance == null)
@@ -22,7 +27,6 @@ public class FirebaseManager : MonoBehaviour
         }
         else
         {
-            // Si ya existe un FirebaseManager, este se destruye
             Destroy(this.gameObject);
         }
     }
@@ -30,48 +34,87 @@ public class FirebaseManager : MonoBehaviour
     void Start()
     {
         SetDefaultCursor();
-
-        StartCoroutine(InitializeFirebase());
+        StartCoroutine(InitializeFirebaseSequence());
     }
+
+    private IEnumerator InitializeFirebaseSequence()
+    {
+        var checkTask = Firebase.FirebaseApp.CheckAndFixDependenciesAsync();
+        yield return new WaitUntil(() => checkTask.IsCompleted);
+
+        if (checkTask.Result == Firebase.DependencyStatus.Available)
+        {
+            Firebase.FirebaseApp app = Firebase.FirebaseApp.DefaultInstance;
+            db = FirebaseFirestore.DefaultInstance;
+            auth = FirebaseAuth.DefaultInstance;
+            isFirebaseReady = true;
+            Debug.Log("Firebase Initialized Successfully.");
+        }
+        else
+        {
+            Debug.LogError($"Firebase Dependency Error: {checkTask.Result}");
+            isFirebaseReady = false;
+        }
+    }
+
+    // --- CURSOR LOGIC ---
 
     public void SetDefaultCursor()
     {
-        // Ponemos la lanza de cursor
-        Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.Auto);
+        if (defaultCursor != null)
+            Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.Auto);
     }
 
     public void SetTextCursor()
     {
-        // Ponemos el cursor de texto
-        Vector2 hotspot = new Vector2(textCursor.width / 2, textCursor.height / 2);
-        Cursor.SetCursor(textCursor, hotspot, CursorMode.Auto);
+        if (textCursor != null)
+        {
+            Vector2 hotspot = new Vector2(textCursor.width / 2, textCursor.height / 2);
+            Cursor.SetCursor(textCursor, hotspot, CursorMode.Auto);
+        }
     }
 
-    private IEnumerator InitializeFirebase()
+    // --- STATS LOGIC ---
+
+    public async void ActualizarEstadistica(string type, int amount)
     {
-        Debug.Log("Comprobando dependencias de Firebase...");
+        if (!isFirebaseReady || auth.CurrentUser == null) return;
 
-        // Comprueba si todas las dependencias necesarias están listas
-        var checkTask = Firebase.FirebaseApp.CheckAndFixDependenciesAsync();
-        
-        // Espera hasta que la tarea de comprobación termine
-        yield return new WaitUntil(() => checkTask.IsCompleted);
+        string userId = auth.CurrentUser.UserId;
+        DocumentReference userDoc = db.Collection("usuarios").Document(userId);
 
-        // Obtenemos el resultado de la comprobación
-        var dependencyStatus = checkTask.Result;
+        string fieldPath = GetFieldPath(type);
+        if (string.IsNullOrEmpty(fieldPath)) return;
 
-        if (dependencyStatus == Firebase.DependencyStatus.Available)
+        try
         {
-            Debug.Log("Firebase inicializado correctamente.");
-            isFirebaseReady = true;
-            
-            // Inicializamos la App
-            Firebase.FirebaseApp app = Firebase.FirebaseApp.DefaultInstance;
+            Dictionary<string, object> updates = new Dictionary<string, object>
+            {
+                { fieldPath, FieldValue.Increment(amount) }
+            };
+
+            await userDoc.UpdateAsync(updates);
         }
-        else
+        catch (System.Exception ex)
         {
-            Debug.LogError($"No se pudieron resolver las dependencias de Firebase: {dependencyStatus}");
-            isFirebaseReady = false;
+            Debug.LogError($"Failed to update stats: {ex.Message}");
+        }
+    }
+
+    public void ActualizarScore(int amount)
+    {
+        ActualizarEstadistica("score", amount);
+    }
+
+    private string GetFieldPath(string type)
+    {
+        switch (type)
+        {
+            case "kill": return "stats.total_kills";
+            case "win": return "stats.total_wins";
+            case "loss": return "stats.total_losses";
+            case "score": return "stats.best_score";
+            default: return "";
         }
     }
 }

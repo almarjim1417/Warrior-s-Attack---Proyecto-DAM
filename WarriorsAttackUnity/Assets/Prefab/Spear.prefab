@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8537601533994122696}
   - component: {fileID: 2025826831298844340}
   - component: {fileID: 4318902219777989351}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Spear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,4 +200,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 25
   lifeTime: 3
+  damage: 1
+  impactoVFX: {fileID: 7970761297355185334, guid: 6b2cb755e03ef8946a7f7f59e62ba5d2, type: 3}
+  puntaOffset: 0.5
   animacionLanza: {fileID: 7400000, guid: 525b0b226dd08bc41b3b08f6b7d9b949, type: 2}

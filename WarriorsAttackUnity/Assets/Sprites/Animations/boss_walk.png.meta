@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: aefbaf8a60f7bc5419623cbd3a09d326
+guid: f20fa6ef3f8938946a01829761df4adb
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -20,6 +20,12 @@ TextureImporter:
   - first:
       213: 4656615804049538737
     second: boss_walk_5
+  - first:
+      213: -5628220704691668306
+    second: boss_walk_6
+  - first:
+      213: -2949961359482863374
+    second: boss_walk_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -52,7 +58,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -112,7 +118,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
+    buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -125,7 +131,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: Android
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -144,12 +150,12 @@ TextureImporter:
       name: boss_walk_0
       rect:
         serializedVersion: 2
-        x: 24
+        x: 32
         y: 11
-        width: 15
-        height: 46
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 28
+        height: 67
+      alignment: 9
+      pivot: {x: 0.5, y: 0.55}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -166,12 +172,12 @@ TextureImporter:
       name: boss_walk_1
       rect:
         serializedVersion: 2
-        x: 83
+        x: 126
         y: 11
-        width: 26
-        height: 45
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 38
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.55}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -188,12 +194,12 @@ TextureImporter:
       name: boss_walk_2
       rect:
         serializedVersion: 2
-        x: 145
+        x: 222
         y: 12
-        width: 24
-        height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 44
+        height: 69
+      alignment: 9
+      pivot: {x: 0.5, y: 0.55}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -210,12 +216,12 @@ TextureImporter:
       name: boss_walk_3
       rect:
         serializedVersion: 2
-        x: 216
-        y: 12
-        width: 15
-        height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 320
+        y: 11
+        width: 36
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.55}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -232,12 +238,12 @@ TextureImporter:
       name: boss_walk_4
       rect:
         serializedVersion: 2
-        x: 274
-        y: 12
-        width: 29
-        height: 45
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 416
+        y: 9
+        width: 30
+        height: 67
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -254,12 +260,12 @@ TextureImporter:
       name: boss_walk_5
       rect:
         serializedVersion: 2
-        x: 339
-        y: 11
-        width: 25
-        height: 46
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 508
+        y: 10
+        width: 40
+        height: 69
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -272,11 +278,55 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: boss_walk_6
+      rect:
+        serializedVersion: 2
+        x: 602
+        y: 12
+        width: 47
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eaaba53b61b84e1b0800000000000000
+      internalID: -5628220704691668306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_walk_7
+      rect:
+        serializedVersion: 2
+        x: 703
+        y: 13
+        width: 36
+        height: 65
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f045eae5c1af07d0800000000000000
+      internalID: -2949961359482863374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: fcbb6377e8416314ea3e49d878d5090d
     internalID: 0
     vertices: []
     indices: 
@@ -292,6 +342,8 @@ TextureImporter:
       boss_walk_3: 9001286328308611506
       boss_walk_4: 3553194637698424559
       boss_walk_5: 4656615804049538737
+      boss_walk_6: -5628220704691668306
+      boss_walk_7: -2949961359482863374
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

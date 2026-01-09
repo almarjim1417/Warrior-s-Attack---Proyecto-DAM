@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 37ef93625adbc6344b78ca8882b34434
+guid: a0956331254d138499768b73ef89b25d
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -20,9 +20,6 @@ TextureImporter:
   - first:
       213: -6231923874741604251
     second: boss_attack_5
-  - first:
-      213: -8865549860339745163
-    second: boss_attack_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -55,7 +52,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -115,7 +112,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
+    buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -128,7 +125,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: Android
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -147,12 +144,12 @@ TextureImporter:
       name: boss_attack_0
       rect:
         serializedVersion: 2
-        x: 16
-        y: 10
-        width: 20
-        height: 43
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 29
+        y: 12
+        width: 37
+        height: 69
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +166,12 @@ TextureImporter:
       name: boss_attack_1
       rect:
         serializedVersion: 2
-        x: 73
-        y: 10
-        width: 40
-        height: 43
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 123
+        y: 12
+        width: 39
+        height: 67
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +188,12 @@ TextureImporter:
       name: boss_attack_2
       rect:
         serializedVersion: 2
-        x: 137
-        y: 11
-        width: 41
-        height: 41
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 221
+        y: 13
+        width: 37
+        height: 67
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -213,12 +210,12 @@ TextureImporter:
       name: boss_attack_3
       rect:
         serializedVersion: 2
-        x: 203
-        y: 12
-        width: 46
-        height: 40
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 315
+        y: 13
+        width: 47
+        height: 67
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -235,12 +232,12 @@ TextureImporter:
       name: boss_attack_4
       rect:
         serializedVersion: 2
-        x: 262
-        y: 11
-        width: 38
-        height: 38
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 412
+        y: 13
+        width: 44
+        height: 70
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -257,12 +254,12 @@ TextureImporter:
       name: boss_attack_5
       rect:
         serializedVersion: 2
-        x: 331
-        y: 11
-        width: 36
-        height: 41
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 499
+        y: 12
+        width: 50
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -275,33 +272,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: boss_attack_6
-      rect:
-        serializedVersion: 2
-        x: 402
-        y: 10
-        width: 15
-        height: 47
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 57e7febaf5d37f480800000000000000
-      internalID: -8865549860339745163
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 894a54dddf4dc9245a09417f97a4b730
     internalID: 0
     vertices: []
     indices: 
@@ -317,7 +292,6 @@ TextureImporter:
       boss_attack_3: -514692836225630516
       boss_attack_4: 8958798872038287775
       boss_attack_5: -6231923874741604251
-      boss_attack_6: -8865549860339745163
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
