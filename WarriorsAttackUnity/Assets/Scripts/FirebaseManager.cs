@@ -11,7 +11,7 @@ public class FirebaseManager : MonoBehaviour
     public static FirebaseManager Instance { get; private set; }
     public static bool isFirebaseReady = false;
 
-    [Header("Cursor Settings")]
+    [Header("Configuración del Ratón")]
     public Texture2D defaultCursor;
     public Texture2D textCursor;
 
@@ -20,6 +20,7 @@ public class FirebaseManager : MonoBehaviour
 
     void Awake()
     {
+        // Singleton: Para que este objeto no se borre al cambiar de escena
         if (Instance == null)
         {
             Instance = this;
@@ -39,6 +40,7 @@ public class FirebaseManager : MonoBehaviour
 
     private IEnumerator InitializeFirebaseSequence()
     {
+        // Esperamos a que el móvil compruebe si tiene los servicios de Google instalados
         var checkTask = Firebase.FirebaseApp.CheckAndFixDependenciesAsync();
         yield return new WaitUntil(() => checkTask.IsCompleted);
 
@@ -48,16 +50,16 @@ public class FirebaseManager : MonoBehaviour
             db = FirebaseFirestore.DefaultInstance;
             auth = FirebaseAuth.DefaultInstance;
             isFirebaseReady = true;
-            Debug.Log("Firebase Initialized Successfully.");
+            Debug.Log("Firebase conectado.");
         }
         else
         {
-            Debug.LogError($"Firebase Dependency Error: {checkTask.Result}");
+            Debug.LogError($"Error Firebase: {checkTask.Result}");
             isFirebaseReady = false;
         }
     }
 
-    // --- CURSOR LOGIC ---
+    // Funciones del cursor
 
     public void SetDefaultCursor()
     {
@@ -74,7 +76,7 @@ public class FirebaseManager : MonoBehaviour
         }
     }
 
-    // --- STATS LOGIC ---
+    // Estadísticas
 
     public async void ActualizarEstadistica(string type, int amount)
     {
@@ -88,6 +90,7 @@ public class FirebaseManager : MonoBehaviour
 
         try
         {
+            // Usamos Increment para sumar el valor directamente en la nube sin fallos
             Dictionary<string, object> updates = new Dictionary<string, object>
             {
                 { fieldPath, FieldValue.Increment(amount) }
@@ -97,7 +100,7 @@ public class FirebaseManager : MonoBehaviour
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"Failed to update stats: {ex.Message}");
+            Debug.LogError($"Error al guardar: {ex.Message}");
         }
     }
 

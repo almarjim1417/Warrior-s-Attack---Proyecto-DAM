@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
     public UIManager uiManager;
 
     [Header("Límites")]
-    public float alturaMuerte = -10f;
+    public float alturaMuerte = -10f; // Si baja de aquí, muere
 
     [Header("Audio")]
     public AudioClip sound_Jump;
@@ -34,20 +34,20 @@ public class PlayerController : MonoBehaviour
     public AudioClip sound_ExtraLife;
 
     [Header("Visuales")]
-    public Transform graficosTransform;
+    public Transform graficosTransform; // Para rotar el dibujo al subir cuestas
 
     [Header("Combate")]
-    public Transform firePoint;
-    public GameObject spearPrefab;
-    public float fireRate = 0.5f;
+    public Transform firePoint;     // Desde donde sale la lanza
+    public GameObject spearPrefab;  // El objeto de la lanza
+    public float fireRate = 0.5f;   // Tiempo entre disparos
 
     [Header("Salud")]
     public int maxHealth = 5;
     public int currentHealth;
-    public float knockbackForce = 5f;
+    public float knockbackForce = 5f; // Fuerza de empuje al recibir daño
     public float knockbackTime = 0.2f;
 
-    // Variables internas
+    // Variables privadas
     private Rigidbody2D rb;
     private Animator anim;
     private AudioSource audioSource;
@@ -58,6 +58,7 @@ public class PlayerController : MonoBehaviour
     private bool isDead = false;
     private bool isKnockedBack = false;
 
+    // Variables para mejorar el salto (Coyote Time)
     private float hangTime = 0.15f;
     private float hangCounter;
     private float nextFireTime = 0f;
@@ -68,6 +69,7 @@ public class PlayerController : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
         audioSource = GetComponent<AudioSource>();
 
+        // Si se nos olvidó asignar los gráficos, usamos el del animador
         if (graficosTransform == null && anim != null) graficosTransform = anim.transform;
 
         currentHealth = maxHealth;
@@ -77,6 +79,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (isDead) return;
+
+        // Comprobar si ha caído al vacío
         if (transform.position.y < alturaMuerte)
         {
             Die();
@@ -85,25 +89,27 @@ public class PlayerController : MonoBehaviour
 
         if (currentHealth <= 0) return;
 
+        // Leer teclas (A/D o Flechas)
         moveInput = Input.GetAxisRaw("Horizontal");
 
+        // Lógica del "Coyote Time" (permitir saltar un poco después de caer)
         if (isGrounded) hangCounter = hangTime;
         else hangCounter -= Time.deltaTime;
 
-        // Salto
+        // Saltar
         if (Input.GetButtonDown("Jump") && hangCounter > 0)
         {
             Saltar();
         }
 
-        // Ataque
+        // Atacar
         if ((Input.GetKeyDown(KeyCode.F) || Input.GetButtonDown("Fire1")) && Time.time >= nextFireTime)
         {
             Shoot();
             nextFireTime = Time.time + fireRate;
         }
 
-        // Animaciones
+        // Control de Animaciones
         anim.SetBool("IsGrounded", isGrounded);
         if (!isKnockedBack)
         {
@@ -119,18 +125,20 @@ public class PlayerController : MonoBehaviour
 
         CheckGround();
 
+        // Mover al personaje usando físicas
         rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
 
+        // Girar el personaje si cambia de dirección
         if (moveInput > 0 && !isFacingRight) Flip();
         else if (moveInput < 0 && isFacingRight) Flip();
     }
 
-    // --- ACCIONES PRINCIPALES ---
+    // --- ACCIONES ---
 
     void Saltar()
     {
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-        hangCounter = 0;
+        hangCounter = 0; // Gastamos el salto
         isGrounded = false;
         anim.SetBool("IsGrounded", false);
         PlaySound(sound_Jump);
@@ -141,6 +149,7 @@ public class PlayerController : MonoBehaviour
         anim.SetTrigger("Attack");
         PlaySound(sound_Attack);
 
+        // Creamos la lanza y la orientamos según hacia donde miremos
         if (spearPrefab != null && firePoint != null)
         {
             Quaternion rotacion = transform.localScale.x < 0 ? Quaternion.Euler(0, 180, 0) : Quaternion.identity;
@@ -148,7 +157,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // --- LOGICA PÚBLICA (LLAMADA POR OTROS SCRIPTS) ---
+    // --- FUNCIONES PÚBLICAS (Llamadas desde fuera) ---
 
     public void RecogerMoneda(int cantidad)
     {
@@ -158,6 +167,7 @@ public class PlayerController : MonoBehaviour
         monedasTotalesScore += cantidad;
         PlaySound(sound_Coin);
 
+        // Si llegamos al tope, curamos una vida
         if (monedasActuales >= monedasParaCurar)
         {
             Curar(1);
@@ -198,6 +208,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            // Efecto de daño y empuje hacia atrás
             anim.SetTrigger("Hurt");
             PlaySound(sound_Hurt);
 
@@ -214,13 +225,14 @@ public class PlayerController : MonoBehaviour
         finalScore += isVictory ? 100 : -50;
         finalScore += (kills * 10);
         finalScore += monedasTotalesScore;
-        return Mathf.Max(0, finalScore);
+        return Mathf.Max(0, finalScore); // Que no sea negativo
     }
 
     // --- FUNCIONES INTERNAS ---
 
     void CheckGround()
     {
+        // Comprobamos si los pies tocan el suelo (Círculo + Rayo)
         bool touching = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
 
         if (!touching && rb.linearVelocity.y <= 0.1f)
@@ -236,6 +248,7 @@ public class PlayerController : MonoBehaviour
         if (graficosTransform == null) return;
         Quaternion targetRotation = Quaternion.identity;
 
+        // Si estamos en el suelo, rotamos el personaje para que se adapte a la pendiente
         if (hangCounter > 0)
         {
             RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, raycastDistance + 1f, whatIsGround);
@@ -254,6 +267,7 @@ public class PlayerController : MonoBehaviour
 
     void Flip()
     {
+        // Invierte la escala en X para mirar al otro lado
         isFacingRight = !isFacingRight;
         Vector3 scaler = transform.localScale;
         scaler.x *= -1;
@@ -262,6 +276,7 @@ public class PlayerController : MonoBehaviour
 
     void AplicarKnockback(Transform enemy)
     {
+        // Empuja al jugador en dirección contraria al enemigo
         Vector2 direction = (transform.position - enemy.position).normalized;
         Vector2 knockbackDir = new Vector2(direction.x, 0.5f).normalized;
         rb.linearVelocity = Vector2.zero;
@@ -271,6 +286,7 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator KnockbackRoutine()
     {
+        // Desactiva el control un momento mientras nos empujan
         isKnockedBack = true;
         yield return new WaitForSeconds(knockbackTime);
         isKnockedBack = false;
@@ -284,17 +300,19 @@ public class PlayerController : MonoBehaviour
 
         anim.SetBool("IsDead", true);
         rb.linearVelocity = Vector2.zero;
-        rb.constraints = RigidbodyConstraints2D.FreezeAll;
-        gameObject.layer = LayerMask.NameToLayer("Dead");
+        rb.constraints = RigidbodyConstraints2D.FreezeAll; // Congelar posición
+        gameObject.layer = LayerMask.NameToLayer("Dead"); // Cambiar capa para que no nos peguen más
 
         if (uiManager != null) uiManager.ActualizarSalud(0);
 
+        // Desactivar seguimiento de cámara
         if (Camera.main != null)
         {
             MonoBehaviour camScript = Camera.main.GetComponent("CameraFollow") as MonoBehaviour;
             if (camScript != null) camScript.enabled = false;
         }
 
+        // Guardar derrota en la nube
         if (FirebaseManager.Instance != null)
         {
             FirebaseManager.Instance.ActualizarEstadistica("loss", 1);
@@ -329,6 +347,7 @@ public class PlayerController : MonoBehaviour
         if (audioSource != null && clip != null) audioSource.PlayOneShot(clip);
     }
 
+    // Muerte instantánea (pinchos, lava)
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Deadly") && !isDead) Die();

@@ -2,34 +2,33 @@ using UnityEngine;
 
 public class CameraZone : MonoBehaviour
 {
-    [Header("Zone Settings")]
+    [Header("Configuracion")]
     public float targetZoom = 10f;
-    public bool lockY = false;
-    public float targetHeight = 0f;
+    public float heightOffset = 2f;
+    public bool lockYPosition = false; // Si activas esto, la camara no sube ni baja
 
-    private CameraFollow camScript;
+    private CameraFollow cam;
 
     void Start()
     {
-        if (Camera.main != null)
-        {
-            camScript = Camera.main.GetComponent<CameraFollow>();
-        }
+        cam = Camera.main.GetComponent<CameraFollow>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (camScript != null && collision.CompareTag("Player"))
+        if (collision.CompareTag("Player") && cam != null)
         {
-            camScript.EnterZone(targetZoom, targetHeight, lockY);
+            // Al entrar, le decimos a la camara que use estos ajustes
+            cam.EnterZone(targetZoom, heightOffset, lockYPosition);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (camScript != null && collision.CompareTag("Player"))
+        if (collision.CompareTag("Player") && cam != null)
         {
-            camScript.ExitZone();
+            // Al salir, que vuelva a la normalidad
+            cam.ExitZone();
         }
     }
 }

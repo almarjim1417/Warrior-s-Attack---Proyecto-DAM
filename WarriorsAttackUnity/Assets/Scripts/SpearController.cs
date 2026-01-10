@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class SpearController : MonoBehaviour
 {
-    [Header("Configuración")]
+    [Header("Ajustes")]
     public float speed = 15f;
-    public float lifeTime = 3f; // Tiempo antes de desaparecer si no choca
+    public float lifeTime = 3f;
     public int damage = 1;
 
-    [Header("Efectos")]
+    [Header("Efectos Visuales")]
     public GameObject impactoVFX;
-    public float puntaOffset = 0.8f;
+    public float puntaOffset = 0.8f; // Ajuste para que la explosión salga en la punta
     public AnimationClip animacionLanza;
 
     private Rigidbody2D rb;
@@ -18,38 +18,31 @@ public class SpearController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
 
+        // Disparamos la lanza hacia adelante
         rb.linearVelocity = transform.right * speed;
 
-        // Autodestrucción: Si tiene animación usamos su duración, si no, el tiempo fijo
-        float tiempoVida = (animacionLanza != null) ? animacionLanza.length : lifeTime;
-        Destroy(gameObject, tiempoVida);
+        float tiempo = (animacionLanza != null) ? animacionLanza.length : lifeTime;
+        Destroy(gameObject, tiempo);
     }
 
     void OnTriggerEnter2D(Collider2D hitInfo)
     {
-        if (hitInfo.CompareTag("Player") || hitInfo.CompareTag("Monedas")) return;
+        if (hitInfo.CompareTag("Player") || hitInfo.CompareTag("Monedas") || hitInfo.isTrigger) return;
 
-        // También ignoramos triggers invisibles (como zonas de cámara)
-        if (hitInfo.isTrigger) return;
-
-        // 1. ¿Hemos dado a un enemigo normal?
+        // Comprobar si golpea a un Enemigo
         EnemyController enemy = hitInfo.GetComponent<EnemyController>();
-        if (enemy != null)
-        {
-            enemy.TakeDamage(damage);
-        }
+        if (enemy != null) enemy.TakeDamage(damage);
 
+        // Comprobar si golpea al Boss
         BossController boss = hitInfo.GetComponent<BossController>();
-        if (boss != null)
-        {
-            boss.TakeDamage(damage);
-        }
+        if (boss != null) boss.TakeDamage(damage);
 
+        // Crear efecto visual de impacto
         if (impactoVFX != null)
         {
-            // Calculamos la posición de la punta sumando un poco en la dirección de movimiento
-            Vector3 posicionPunta = transform.position + (transform.right * puntaOffset);
-            Instantiate(impactoVFX, posicionPunta, Quaternion.identity);
+            // Calculamos la posición exacta de la punta
+            Vector3 pos = transform.position + (transform.right * puntaOffset);
+            Instantiate(impactoVFX, pos, Quaternion.identity);
         }
 
         Destroy(gameObject);

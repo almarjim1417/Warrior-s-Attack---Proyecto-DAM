@@ -2,50 +2,48 @@ using UnityEngine;
 
 public class BossZoneTrigger : MonoBehaviour
 {
-    [Header("Environment")]
-    public GameObject muroBoss;
-
-    [Header("References")]
+    [Header("Configuración")]
+    public GameObject muroBoss; // El muro invisible que cierra la salida
     public UIManager uiManager;
-    public BossController bossController;
 
-    [Header("Audio Settings")]
-    public AudioSource levelAudioSource;
-    public AudioClip bossMusic;
+    public BossController bossScript;
 
-    private bool hasTriggered = false;
+    [Header("Audio")]
+    public AudioSource audioSourceNivel; // El altavoz de la cámara
+    public AudioClip musicaBoss; // La canción de pelea
+
+    private bool eventoActivado = false; // Para que no se repita si entras y sales
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // "Guard Clause": Si ya se activó o no es el jugador, salimos.
-        if (hasTriggered || !collision.CompareTag("Player")) return;
+        // Solo activamos si entra el Jugador y si no ha pasado ya antes
+        if (eventoActivado || !collision.CompareTag("Player")) return;
 
-        hasTriggered = true;
-        StartBossEvent();
+        eventoActivado = true;
+        iniciarEventoBoss();
     }
 
-    void StartBossEvent()
+    void iniciarEventoBoss()
     {
-        // 1. Bloquear la zona
-        if (muroBoss != null)
-            muroBoss.SetActive(true);
+        // Activamos el muro para bloquear la salida
+        if (muroBoss != null) muroBoss.SetActive(true);
 
-        // 2. Configurar Boss y UI
-        if (bossController != null)
+        // Despertamos al Boss y mostramos su barra de vida en la pantalla
+        if (bossScript != null)
         {
-            bossController.Despertar();
+            bossScript.Despertar();
 
             if (uiManager != null)
-                uiManager.ActivarBossUI(bossController.maxHealth, "The Overlord");
+                uiManager.ActivarBossUI(bossScript.maxHealth, "The Overlord");
         }
 
-        // 3. Cambio de Atmósfera (Música)
-        if (levelAudioSource != null && bossMusic != null)
+        // Cambiamos la música de fondo por la música de tensión
+        if (audioSourceNivel != null && musicaBoss != null)
         {
-            levelAudioSource.Stop();
-            levelAudioSource.clip = bossMusic;
-            levelAudioSource.loop = true;
-            levelAudioSource.Play();
+            audioSourceNivel.Stop();       // Paramos la música normal
+            audioSourceNivel.clip = musicaBoss;
+            audioSourceNivel.loop = true;  // Que se repita en bucle
+            audioSourceNivel.Play();       // Le damos al play
         }
     }
 }

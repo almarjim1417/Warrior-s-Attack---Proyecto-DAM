@@ -10,31 +10,31 @@ using Firebase.Extensions;
 
 public class DashboardManager : MonoBehaviour
 {
-    [Header("--- PANELES PRINCIPALES ---")]
+    [Header("Paneles Principales")]
     public GameObject playerPanel;
     public GameObject adminPanel;
 
-    [Header("--- RANKING UI ---")]
+    [Header("Ranking UI")]
     public GameObject rankingPanel;
-    public Transform rankingContainer;
-    public GameObject rankingRowPrefab;
+    public Transform rankingContainer; // Donde van las filas
+    public GameObject rankingRowPrefab; // La plantilla de la fila
     public Button openRankingButton;
     public Button closeRankingButton;
 
-    [Header("--- UI JUGADOR ---")]
+    [Header("UI Jugador")]
     public TMP_Text playerWelcomeText;
     public TMP_Text playerStatsText;
     public Button playButton;
     public Button logoutButton;
 
-    [Header("--- ADMIN LISTA ---")]
+    [Header("Admin Lista")]
     public Transform adminContainer;
     public GameObject adminRowPrefab;
     public TMP_Text adminWelcomeText;
     public Button adminLogoutButton;
     public TMP_InputField searchInput;
 
-    [Header("--- ADMIN POPUPS ---")]
+    [Header("Admin Popups")]
     public GameObject confirmationPopup;
     public Button confirmDeleteButton;
     public Button cancelDeleteButton;
@@ -50,13 +50,13 @@ public class DashboardManager : MonoBehaviour
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
-    private string currentUserIdSelected;
+    private string currentUserIdSelected; // Para saber a quién estamos editando
 
     void Start()
     {
+        // Ocultamos todo al empezar para que no se vea feo mientras carga
         playerPanel.SetActive(false);
         adminPanel.SetActive(false);
-
         if (rankingPanel != null) rankingPanel.SetActive(false);
         if (confirmationPopup != null) confirmationPopup.SetActive(false);
         if (editUserPopup != null) editUserPopup.SetActive(false);
@@ -64,50 +64,48 @@ public class DashboardManager : MonoBehaviour
         auth = FirebaseAuth.DefaultInstance;
         db = FirebaseFirestore.DefaultInstance;
 
+        // Seguridad: Si no hay usuario logueado, lo echamos al Login
         if (auth.CurrentUser == null)
         {
             SceneManager.LoadScene("AuthScene");
             return;
         }
 
-        // Botones básicos (Logout)
+        // --- Configurar Botones ---
         logoutButton.onClick.AddListener(LogOut);
         adminLogoutButton.onClick.AddListener(LogOut);
 
-        // Boton jugar
         if (playButton != null) playButton.onClick.AddListener(GoToGameScene);
 
-        // Botones de Ranking
         if (openRankingButton != null) openRankingButton.onClick.AddListener(LoadAndShowRanking);
         if (closeRankingButton != null) closeRankingButton.onClick.AddListener(CloseRanking);
 
-        // Listeners Popups
+        // Botones de los Popups de Admin
         confirmDeleteButton.onClick.AddListener(ConfirmDeleteUser);
         cancelDeleteButton.onClick.AddListener(ClosePopups);
         saveChangesButton.onClick.AddListener(SaveChangesUser);
         cancelEditButton.onClick.AddListener(ClosePopups);
         if (resetPasswordButton != null) resetPasswordButton.onClick.AddListener(SendResetEmail);
 
-        // Buscador
+        // Si escribimos en el buscador, recargamos la lista
         if (searchInput != null) searchInput.onValueChanged.AddListener(delegate { LoadAllUsers(); });
 
         LoadUserData();
     }
+
+    // --- CARGAR DATOS DEL USUARIO ACTUAL ---
 
     private async void LoadUserData()
     {
         string uid = auth.CurrentUser.UserId;
         DocumentSnapshot doc = await db.Collection("usuarios").Document(uid).GetSnapshotAsync();
 
-        if (!doc.Exists)
-        {
-            Debug.LogError("Usuario sin datos en Firestore.");
-            return;
-        }
+        if (!doc.Exists) return;
 
         string username = doc.GetValue<string>("username");
         string role = doc.GetValue<string>("role");
 
+        // Dependiendo del rol, mostramos un panel u otro
         if (role == "Admin")
         {
             ShowAdmin(username);
@@ -126,6 +124,7 @@ public class DashboardManager : MonoBehaviour
 
         playerWelcomeText.text = "Bienvenido, " + name;
 
+        // Sacamos las estadísticas del diccionario
         long kills = System.Convert.ToInt64(stats["total_kills"]);
         long wins = System.Convert.ToInt64(stats["total_wins"]);
         long score = System.Convert.ToInt64(stats["best_score"]);
@@ -144,8 +143,11 @@ public class DashboardManager : MonoBehaviour
         LoadAllUsers();
     }
 
+    // --- FUNCIONES DE ADMINISTRADOR ---
+
     private async void LoadAllUsers()
     {
+        // Borramos la lista anterior para no duplicar
         foreach (Transform child in adminContainer) Destroy(child.gameObject);
 
         try
@@ -154,196 +156,152 @@ public class DashboardManager : MonoBehaviour
 
             foreach (DocumentSnapshot doc in snapshot.Documents)
             {
-                string uid = doc.Id;
                 string username = doc.GetValue<string>("username");
-                string email = doc.GetValue<string>("email");
-                string role = doc.GetValue<string>("role");
 
-                // Filtro básico de buscador
+                // Filtro del buscador
                 if (searchInput != null && !string.IsNullOrEmpty(searchInput.text))
                 {
                     if (!username.ToLower().Contains(searchInput.text.ToLower())) continue;
                 }
 
+                // Creamos la fila en la lista
                 GameObject row = Instantiate(adminRowPrefab, adminContainer);
 
-                // Pasamos las funciones OpenEdit y OpenDelete como parámetros
-                row.GetComponent<AdminUserRow>().Configure(uid, username, email, role, OpenEditPopup, OpenDeletePopup);
+                // Configuramos la fila con los datos y le pasamos qué funciones ejecutar al tocar los botones
+                row.GetComponent<AdminUserRow>().Configure(
+                    doc.Id,
+                    username,
+                    doc.GetValue<string>("email"),
+                    doc.GetValue<string>("role"),
+                    OpenEditPopup,
+                    OpenDeletePopup
+                );
             }
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"Error cargando usuarios: {ex.Message}");
+            Debug.LogError("Error cargando lista: " + ex.Message);
         }
     }
 
-    // ABRIR CONFIRMACIÓN BORRAR
     private void OpenDeletePopup(string uid)
     {
-        if (uid == auth.CurrentUser.UserId) { Debug.LogError("No puedes borrarte a ti mismo."); return; }
+        // Evitamos que el admin se borre a sí mismo
+        if (uid == auth.CurrentUser.UserId) return;
 
         currentUserIdSelected = uid;
         confirmationPopup.SetActive(true);
     }
 
-    // EJECUTAR BORRADO
     private async void ConfirmDeleteUser()
     {
         if (string.IsNullOrEmpty(currentUserIdSelected)) return;
 
-        try
-        {
-            await db.Collection("usuarios").Document(currentUserIdSelected).DeleteAsync();
-            Debug.Log("Usuario eliminado.");
-            ClosePopups();
-            LoadAllUsers();
-        }
-        catch (System.Exception ex) { Debug.LogError("Error al borrar: " + ex.Message); }
+        await db.Collection("usuarios").Document(currentUserIdSelected).DeleteAsync();
+        ClosePopups();
+        LoadAllUsers(); // Refrescamos la lista
     }
 
-    // ABRIR EDITOR
     private void OpenEditPopup(string uid, string name, string email, string role)
     {
         currentUserIdSelected = uid;
-
         resetFeedbackText.text = "";
-        // Rellenamos el formulario con los datos actuales
+
+        // Ponemos los datos en los inputs para editar
         editUsernameInput.text = name;
         editEmailInput.text = email;
 
-        // Ajustar el Dropdown
-        if (role == "Admin") editRoleDropdown.value = 1; // Asumiendo que Admin es el índice 1
-        else editRoleDropdown.value = 0; // Jugador
+        // Seleccionamos la opción correcta en el desplegable (0=Jugador, 1=Admin)
+        if (role == "Admin") editRoleDropdown.value = 1;
+        else editRoleDropdown.value = 0;
 
         editUserPopup.SetActive(true);
     }
 
-    // GUARDAR CAMBIOS
     private async void SaveChangesUser()
     {
         if (string.IsNullOrEmpty(currentUserIdSelected)) return;
 
-        string newName = editUsernameInput.text;
-        string newEmail = editEmailInput.text;
-        string newRole = editRoleDropdown.options[editRoleDropdown.value].text;
-
+        // Preparamos solo los datos que queremos cambiar
         Dictionary<string, object> updates = new Dictionary<string, object>
         {
-            { "username", newName },
-            { "email", newEmail },
-            { "role", newRole }
+            { "username", editUsernameInput.text },
+            { "email", editEmailInput.text },
+            { "role", editRoleDropdown.options[editRoleDropdown.value].text }
         };
 
-        try
-        {
-            await db.Collection("usuarios").Document(currentUserIdSelected).UpdateAsync(updates);
-            Debug.Log("Usuario actualizado.");
-            ClosePopups();
-            LoadAllUsers();
-        }
-        catch (System.Exception ex) { Debug.LogError("Error al actualizar: " + ex.Message); }
+        await db.Collection("usuarios").Document(currentUserIdSelected).UpdateAsync(updates);
+        ClosePopups();
+        LoadAllUsers();
     }
 
     private void SendResetEmail()
     {
-        // Cogemos el email del usuario
         string emailTarget = editEmailInput.text;
+        if (string.IsNullOrEmpty(emailTarget)) return;
 
-        if (string.IsNullOrEmpty(emailTarget))
-        {
-            Debug.LogError("El campo email está vacío.");
-            return;
-        }
-
-        // Enviamos la orden a Firebase Auth
+        // Enviamos el correo de recuperación de contraseña
         auth.SendPasswordResetEmailAsync(emailTarget).ContinueWithOnMainThread(task => {
             if (task.IsCanceled || task.IsFaulted)
             {
-                Debug.LogError("Error al enviar correo de reset.");
+                Debug.LogError("Error al enviar correo.");
+                resetFeedbackText.text = "❌ Error al enviar";
             }
             else
             {
-                Debug.Log($"Correo de recuperación enviado a {emailTarget}");
+                Debug.Log("Correo enviado.");
+                resetFeedbackText.text = "✅ Correo enviado";
             }
-
-            auth.SendPasswordResetEmailAsync(emailTarget).ContinueWithOnMainThread(task => {
-                if (task.IsCanceled || task.IsFaulted)
-                {
-                    Debug.LogError("Error al enviar correo de reset.");
-                }
-                else
-                {
-                    Debug.Log($"Correo de recuperación enviado a {emailTarget}");
-
-                    if (resetFeedbackText != null)
-                    {
-                        resetFeedbackText.text = "✅ Correo enviado correctamente";
-                    }
-                }
-            });
         });
     }
 
     private void ClosePopups()
     {
-        confirmationPopup.SetActive(false);
-        editUserPopup.SetActive(false);
+        if (confirmationPopup) confirmationPopup.SetActive(false);
+        if (editUserPopup) editUserPopup.SetActive(false);
         currentUserIdSelected = "";
     }
 
-
+    // --- RANKING ---
 
     private async void LoadAndShowRanking()
     {
-        Debug.Log($"[DEBUG] Intentando activar el objeto llamado: {rankingPanel.name}");
         playerPanel.SetActive(false);
         adminPanel.SetActive(false);
         rankingPanel.SetActive(true);
 
+        // Limpiamos la tabla
+        foreach (Transform child in rankingContainer) Destroy(child.gameObject);
 
-        // Limpiar lista anterior
-        foreach (Transform child in rankingContainer)
+        // Pedimos los 10 mejores jugadores ordenados por puntuación
+        QuerySnapshot snapshot = await db.Collection("usuarios")
+                                         .OrderByDescending("stats.best_score")
+                                         .Limit(10)
+                                         .GetSnapshotAsync();
+
+        foreach (DocumentSnapshot doc in snapshot.Documents)
         {
-            Destroy(child.gameObject);
+            Dictionary<string, object> stats = doc.GetValue<Dictionary<string, object>>("stats");
+
+            GameObject row = Instantiate(rankingRowPrefab, rankingContainer);
+            row.GetComponent<RankingRow>().SetData(
+                doc.GetValue<string>("username"),
+                stats["best_score"].ToString()
+            );
         }
-
-        Debug.Log("Cargando Ranking...");
-
-        try
-        {
-            QuerySnapshot snapshot = await db.Collection("usuarios")
-                                             .OrderByDescending("stats.best_score")
-                                             .Limit(10)
-                                             .GetSnapshotAsync();
-
-            Debug.Log($"[RANKING] Consulta terminada. Se han encontrado {snapshot.Count} usuarios.");
-
-            foreach (DocumentSnapshot doc in snapshot.Documents)
-            {
-                string name = doc.GetValue<string>("username");
-                Dictionary<string, object> stats = doc.GetValue<Dictionary<string, object>>("stats");
-                string score = stats["best_score"].ToString();
-
-                GameObject row = Instantiate(rankingRowPrefab, rankingContainer);
-                row.GetComponent<RankingRow>().SetData(name, score);
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"Error al cargar ranking: {ex.Message}");
-        }
-    }
-
-    // Función para empezar partida
-    private void GoToGameScene()
-    {
-        SceneManager.LoadScene("GameScene");
     }
 
     private void CloseRanking()
     {
         rankingPanel.SetActive(false);
         playerPanel.SetActive(true);
+    }
+
+    // --- NAVEGACIÓN ---
+
+    private void GoToGameScene()
+    {
+        SceneManager.LoadScene("GameScene");
     }
 
     public void LogOut()

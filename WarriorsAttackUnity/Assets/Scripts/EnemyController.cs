@@ -4,58 +4,57 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     public enum EnemyType { Zombie, Stalker }
+
+    [Header("Tipo de Enemigo")]
     public EnemyType enemyType;
 
-    [Header("Estadísticas Comunes")]
+    [Header("Vida y Daño")]
     public int maxHealth = 3;
-    private int currentHealth;
     public int damage = 1;
-    private Rigidbody2D rb;
-    private Animator anim;
-    private bool movingRight = true;
-    private bool isDead = false;
+    private int currentHealth;
 
-    [Header("Configuración ZOMBIE")]
+    [Header("Configuración Zombie (Patrulla)")]
     public float patrolSpeed = 2f;
     public float patrolDistance = 3f;
-    private Vector2 startPosition;
-    public Transform wallCheckPoint;
+    public Transform wallCheckPoint; // Punto desde donde miramos si hay pared
     public float wallCheckDistance = 0.5f;
-    public LayerMask whatIsGround;
+    public LayerMask whatIsGround; // Qué capas cuentan como suelo/pared
 
-    [Header("Configuración STALKER")]
+    [Header("Configuración Stalker (Perseguidor)")]
     public float chaseSpeed = 5f;
-    public float aggroRange = 6f;
-    public float attackRange = 1.5f;
+    public float aggroRange = 6f; // A qué distancia nos ve
+    public float attackRange = 1.5f; // A qué distancia pega
+    public Transform ledgeCheckPoint; // Punto para mirar si hay precipicio
+    public bool avoidFalls = true; // Si es true, no se tirará por huecos
     public Transform player;
 
-    [Header("Detección de Caídas (Stalker)")]
-    public Transform ledgeCheckPoint;
-    public bool avoidFalls = true;
-
     [Header("Combate")]
-    public float timeToHit = 0.3f;
+    public float timeToHit = 0.3f; // Retraso para que el daño coincida con la animación
     private bool isAttacking = false;
     private bool isChasing = false;
-    private bool isBlocked = false;
+    private bool isDead = false;
 
-    [Header("Audio (Arrastra tus archivos aquí)")]
-    public AudioClip sound_ZombieAttack; 
-    public AudioClip sound_ZombieHurt; 
-    public AudioClip sound_StalkerDetect; 
+    [Header("Sonidos")]
+    public AudioClip sound_ZombieAttack;
+    public AudioClip sound_ZombieHurt;
+    public AudioClip sound_StalkerDetect;
 
+    private Rigidbody2D rb;
+    private Animator anim;
     private AudioSource audioSource;
+    private bool movingRight = true;
+    private Vector2 startPosition;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-
         audioSource = GetComponent<AudioSource>();
 
         currentHealth = maxHealth;
         startPosition = transform.position;
 
+        // Buscamos al jugador automáticamente si no lo hemos puesto a mano
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null) player = playerObj.transform;
     }
@@ -63,19 +62,31 @@ public class EnemyController : MonoBehaviour
     void Update()
     {
         if (isDead) return;
+
+        // Si estamos atacando, nos quedamos quietos
         if (isAttacking)
         {
             rb.linearVelocity = Vector2.zero;
             return;
         }
 
-        if (enemyType == EnemyType.Zombie) ZombieLogic();
-        else if (enemyType == EnemyType.Stalker) StalkerLogic();
+        // Ejecutamos la lógica según qué bicho sea
+        switch (enemyType)
+        {
+            case EnemyType.Zombie:
+                ZombieLogic();
+                break;
+            case EnemyType.Stalker:
+                StalkerLogic();
+                break;
+        }
 
+        // Animación de andar
         anim.SetBool("IsMoving", Mathf.Abs(rb.linearVelocity.x) > 0.1f);
-        anim.SetBool("IsChasing", isChasing && !isBlocked);
+        anim.SetBool("IsChasing", isChasing);
     }
 
+    // --- ZOMBIE: Camina de un lado a otro ---
     void ZombieLogic()
     {
         isChasing = false;
@@ -83,10 +94,12 @@ public class EnemyController : MonoBehaviour
         float speed = movingRight ? patrolSpeed : -patrolSpeed;
         rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
 
+        // Si nos alejamos mucho del punto de inicio, damos la vuelta
         float distanceFromStart = transform.position.x - startPosition.x;
         if (movingRight && distanceFromStart > patrolDistance) Flip();
         else if (!movingRight && distanceFromStart < -patrolDistance) Flip();
 
+        // Si nos chocamos con una pared, damos la vuelta
         if (wallCheckPoint != null)
         {
             bool hitWall = Physics2D.Raycast(wallCheckPoint.position, transform.right, wallCheckDistance, whatIsGround);
@@ -94,57 +107,47 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    // --- STALKER: Persigue al jugador ---
     void StalkerLogic()
     {
         if (player == null) return;
-
-        if (!player.CompareTag("Player"))
-        {
-            rb.linearVelocity = Vector2.zero;
-            isChasing = false;
-            anim.SetBool("IsMoving", false);
-            return;
-        }
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
         if (!isChasing)
         {
+            // Está quieto esperando
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
 
-            // Si entra en rango, empieza a perseguir
+            // Si el jugador se acerca, empieza la persecución
             if (distanceToPlayer < aggroRange)
             {
                 isChasing = true;
-
-                // --- SONIDO DETECTAR (Solo Stalker) ---
                 if (audioSource != null && sound_StalkerDetect != null)
                     audioSource.PlayOneShot(sound_StalkerDetect);
             }
         }
         else
         {
+            // Ya nos ha visto
             if (distanceToPlayer <= attackRange)
             {
+                // Está a rango de golpe: Ataca
                 rb.linearVelocity = Vector2.zero;
                 StartCoroutine(PerformAttackSequence(player.gameObject));
             }
             else
             {
-                isBlocked = false;
+                // Está lejos: Persigue
 
+                // Evitar caídas por precipicios
                 if (avoidFalls && ledgeCheckPoint != null)
                 {
-                    bool isThereGround = Physics2D.Raycast(ledgeCheckPoint.position, Vector2.down, 2f, whatIsGround);
-
-                    if (!isThereGround)
+                    bool haySuelo = Physics2D.Raycast(ledgeCheckPoint.position, Vector2.down, 2f, whatIsGround);
+                    if (!haySuelo)
                     {
+                        // Si no hay suelo, se frena y no avanza
                         rb.linearVelocity = Vector2.zero;
-                        isBlocked = true;
-
-                        if (transform.position.x < player.position.x && !movingRight) Flip();
-                        else if (transform.position.x > player.position.x && movingRight) Flip();
-
                         return;
                     }
                 }
@@ -156,6 +159,7 @@ public class EnemyController : MonoBehaviour
 
     void ChasePlayer()
     {
+        // Miramos hacia el jugador
         if (transform.position.x < player.position.x && !movingRight) Flip();
         else if (transform.position.x > player.position.x && movingRight) Flip();
 
@@ -175,7 +179,6 @@ public class EnemyController : MonoBehaviour
 
         currentHealth -= damageAmount;
 
-        // --- SONIDO HURT ---
         if (audioSource != null && sound_ZombieHurt != null)
             audioSource.PlayOneShot(sound_ZombieHurt);
 
@@ -186,6 +189,7 @@ public class EnemyController : MonoBehaviour
         else
         {
             anim.SetTrigger("Hurt");
+            // Si le pegamos, nos empieza a perseguir aunque fuera un Zombie tranquilo
             if (enemyType == EnemyType.Stalker) isChasing = true;
         }
     }
@@ -195,13 +199,11 @@ public class EnemyController : MonoBehaviour
         isDead = true;
         anim.SetBool("IsDead", true);
 
+        // Sumar Kill al jugador y a Firebase
         if (player != null)
         {
             PlayerController playerScript = player.GetComponent<PlayerController>();
-            if (playerScript != null)
-            {
-                playerScript.RegistrarKill();
-            }
+            if (playerScript != null) playerScript.RegistrarKill();
         }
 
         if (FirebaseManager.Instance != null)
@@ -209,6 +211,7 @@ public class EnemyController : MonoBehaviour
             FirebaseManager.Instance.ActualizarEstadistica("kill", 1);
         }
 
+        // Desactivamos el script y ajustamos el colider para que se pueda pisar el cadáver
         this.enabled = false;
 
         BoxCollider2D col = GetComponent<BoxCollider2D>();
@@ -219,24 +222,23 @@ public class EnemyController : MonoBehaviour
             col.isTrigger = true;
         }
 
-        rb.gravityScale = 0;
         rb.linearVelocity = Vector2.zero;
-        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.bodyType = RigidbodyType2D.Kinematic; // Quitamos físicas
+        gameObject.tag = "Untagged"; // Quitamos etiqueta de enemigo
 
-        gameObject.tag = "Untagged";
-        Destroy(gameObject, 2f);
+        Destroy(gameObject, 2f); // Desaparece a los 2 segundos
     }
 
+    // Para cuando el Zombie choca con el jugador simplemente caminando
     void OnCollisionStay2D(Collision2D collision)
     {
         if (enemyType == EnemyType.Zombie && !isDead && !isAttacking)
         {
             if (collision.gameObject.CompareTag("Player"))
             {
-                float direccionJugador = collision.transform.position.x - transform.position.x;
-
-                if (direccionJugador > 0 && !movingRight) Flip();
-                else if (direccionJugador < 0 && movingRight) Flip();
+                // Nos giramos para mirarle y atacamos
+                float direccion = collision.transform.position.x - transform.position.x;
+                if ((direccion > 0 && !movingRight) || (direccion < 0 && movingRight)) Flip();
 
                 StartCoroutine(PerformAttackSequence(collision.gameObject));
             }
@@ -248,39 +250,43 @@ public class EnemyController : MonoBehaviour
         isAttacking = true;
         anim.SetTrigger("Attack");
 
-        // --- SONIDO ATAQUE ---
         if (audioSource != null && sound_ZombieAttack != null)
             audioSource.PlayOneShot(sound_ZombieAttack);
 
+        // Esperamos el momento justo de la animación para hacer daño
         yield return new WaitForSeconds(timeToHit);
 
         if (target != null && !isDead)
         {
             float dist = Vector2.Distance(transform.position, target.transform.position);
+            // Comprobamos si el jugador sigue cerca
             if (dist <= attackRange + 1f)
             {
                 PlayerController playerScript = target.GetComponent<PlayerController>();
                 if (playerScript != null) playerScript.TakeDamage(damage, transform);
             }
         }
+
+        // Pequeña pausa después de atacar
         yield return new WaitForSeconds(0.5f);
         isAttacking = false;
     }
 
+    // Dibujitos en el editor para ver los rangos
     void OnDrawGizmosSelected()
     {
         if (ledgeCheckPoint != null)
         {
             Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(ledgeCheckPoint.position, ledgeCheckPoint.position + Vector3.down * 1f);
+            Gizmos.DrawLine(ledgeCheckPoint.position, ledgeCheckPoint.position + Vector3.down * 2f);
         }
 
         if (enemyType == EnemyType.Stalker)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, aggroRange);
+            Gizmos.DrawWireSphere(transform.position, aggroRange); // Rango visión
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, attackRange);
+            Gizmos.DrawWireSphere(transform.position, attackRange); // Rango ataque
         }
     }
 }

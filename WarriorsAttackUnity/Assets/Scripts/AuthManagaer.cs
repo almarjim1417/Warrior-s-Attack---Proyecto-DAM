@@ -15,40 +15,42 @@ public class AuthManager : MonoBehaviour
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
-    [Header("UI Panels")]
+    [Header("Paneles")]
     public GameObject welcomePanel;
     public GameObject loginPanel;
     public GameObject registerPanel;
 
-    [Header("Navigation Buttons")]
+    [Header("Botones Navegación")]
     public Button goToLoginButton;
     public Button goToRegisterButton;
     public Button backFromLoginButton;
     public Button backFromRegisterButton;
 
-    [Header("Login Fields")]
+    [Header("Login")]
     public TMP_InputField usernameLoginInput;
     public TMP_InputField passwordLoginInput;
     public Button loginButton;
 
-    [Header("Register Fields")]
+    [Header("Registro")]
     public TMP_InputField usernameRegisterInput;
     public TMP_InputField emailRegisterInput;
     public TMP_InputField passwordRegisterInput;
     public Button registerButton;
 
-    [Header("Feedback")]
+    [Header("Textos de Error")]
     public TMP_Text errorText;
 
     void Start()
     {
         ShowWelcomePanel();
 
+        // Asignamos los botones para cambiar de pantalla
         goToLoginButton.onClick.AddListener(ShowLoginPanel);
         goToRegisterButton.onClick.AddListener(ShowRegisterPanel);
         backFromLoginButton.onClick.AddListener(ShowWelcomePanel);
         backFromRegisterButton.onClick.AddListener(ShowWelcomePanel);
 
+        // Botones de acción
         loginButton.onClick.AddListener(HandleLogin);
         registerButton.onClick.AddListener(HandleRegister);
 
@@ -57,13 +59,14 @@ public class AuthManager : MonoBehaviour
 
     private IEnumerator InitializeFirebaseSequence()
     {
+        // Esperamos a que el FirebaseManager esté listo antes de empezar
         yield return new WaitUntil(() => FirebaseManager.isFirebaseReady);
 
         auth = FirebaseAuth.DefaultInstance;
         db = FirebaseFirestore.DefaultInstance;
     }
 
-    // --- Navigation Logic ---
+    // Funciones para cambiar de pantalla
 
     private void ShowWelcomePanel() => TogglePanels(true, false, false);
     private void ShowLoginPanel() => TogglePanels(false, true, false);
@@ -77,7 +80,7 @@ public class AuthManager : MonoBehaviour
         errorText.text = "";
     }
 
-    // --- Auth Logic ---
+    // Lógica de Usuario
 
     private async void HandleLogin()
     {
@@ -95,7 +98,7 @@ public class AuthManager : MonoBehaviour
 
         try
         {
-            // 1. Resolver Email a partir del Username
+            // Primero buscamos el email usando el nombre de usuario
             QuerySnapshot usernameQuery = await db.Collection("usuarios")
                 .WhereEqualTo("username", username)
                 .Limit(1)
@@ -111,11 +114,11 @@ public class AuthManager : MonoBehaviour
             string email = userDoc.GetValue<string>("email");
             string role = userDoc.GetValue<string>("role");
 
-            // 2. Autenticación contra Firebase Auth
+            // Ahora sí hacemos login con el email y la contraseña
             AuthResult authResult = await auth.SignInWithEmailAndPasswordAsync(email, password);
             FirebaseUser user = authResult.User;
 
-            Debug.Log($"Login exitoso: {user.UserId} ({role})");
+            Debug.Log($"Login correcto: {user.UserId} ({role})");
             SceneManager.LoadScene("DashboardScene");
         }
         catch (System.Exception ex)
@@ -147,7 +150,7 @@ public class AuthManager : MonoBehaviour
 
         try
         {
-            // 1. Verificar unicidad del Username
+            // Comprobamos si ese nombre de usuario ya existe en la base de datos
             QuerySnapshot usernameQuery = await db.Collection("usuarios")
                 .WhereEqualTo("username", username)
                 .Limit(1)
@@ -159,7 +162,7 @@ public class AuthManager : MonoBehaviour
                 return;
             }
 
-            // 2. Crear usuario en Auth
+            // Creamos el usuario en Firebase Authentication
             Task<AuthResult> registerTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
             await registerTask;
 
@@ -167,7 +170,7 @@ public class AuthManager : MonoBehaviour
 
             string userId = registerTask.Result.User.UserId;
 
-            // 3. Crear documento de usuario en Firestore
+            // Preparamos los datos iniciales (stats a cero)
             Dictionary<string, object> userStats = new Dictionary<string, object>
             {
                 { "total_kills", 0 },
@@ -184,6 +187,7 @@ public class AuthManager : MonoBehaviour
                 { "stats", userStats }
             };
 
+            // Guardamos la ficha del jugador en Firestore
             await db.Collection("usuarios").Document(userId).SetAsync(userProfile);
 
             ShowLoginPanel();
@@ -196,8 +200,11 @@ public class AuthManager : MonoBehaviour
         }
     }
 
+    // Control de errores
+
     private void HandleFirebaseError(System.Exception ex)
     {
+        // Traducimos los errores raros de Firebase a mensajes normales
         FirebaseException firebaseEx = ex.GetBaseException() as FirebaseException;
         if (firebaseEx != null)
         {
