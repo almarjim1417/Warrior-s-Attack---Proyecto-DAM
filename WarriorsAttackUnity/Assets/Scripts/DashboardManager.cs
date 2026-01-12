@@ -16,8 +16,8 @@ public class DashboardManager : MonoBehaviour
 
     [Header("Ranking UI")]
     public GameObject rankingPanel;
-    public Transform rankingContainer; // Donde van las filas
-    public GameObject rankingRowPrefab; // La plantilla de la fila
+    public Transform rankingContainer;
+    public GameObject rankingRowPrefab;
     public Button openRankingButton;
     public Button closeRankingButton;
 
@@ -50,7 +50,7 @@ public class DashboardManager : MonoBehaviour
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
-    private string currentUserIdSelected; // Para saber a quién estamos editando
+    private string currentUserIdSelected;
 
     void Start()
     {
@@ -64,14 +64,14 @@ public class DashboardManager : MonoBehaviour
         auth = FirebaseAuth.DefaultInstance;
         db = FirebaseFirestore.DefaultInstance;
 
-        // Seguridad: Si no hay usuario logueado, lo echamos al Login
+        // Si no hay usuario logueado, vuelve al Login
         if (auth.CurrentUser == null)
         {
             SceneManager.LoadScene("AuthScene");
             return;
         }
 
-        // --- Configurar Botones ---
+        // CONFIGURAR BOTONES
         logoutButton.onClick.AddListener(LogOut);
         adminLogoutButton.onClick.AddListener(LogOut);
 
@@ -93,27 +93,28 @@ public class DashboardManager : MonoBehaviour
         LoadUserData();
     }
 
-    // --- CARGAR DATOS DEL USUARIO ACTUAL ---
+    // CARGAMOS DATOS DEL USUARIO ACTUAL
 
     private async void LoadUserData()
     {
         string uid = auth.CurrentUser.UserId;
         DocumentSnapshot doc = await db.Collection("usuarios").Document(uid).GetSnapshotAsync();
 
-        if (!doc.Exists) return;
-
-        string username = doc.GetValue<string>("username");
-        string role = doc.GetValue<string>("role");
-
-        // Dependiendo del rol, mostramos un panel u otro
-        if (role == "Admin")
+        if (doc.Exists)
         {
-            ShowAdmin(username);
-        }
-        else
-        {
-            Dictionary<string, object> stats = doc.GetValue<Dictionary<string, object>>("stats");
-            ShowPlayer(username, stats);
+            string username = doc.GetValue<string>("username");
+            string role = doc.GetValue<string>("role");
+
+            // Dependiendo del rol, mostramos un panel u otro
+            if (role == "Admin")
+            {
+                ShowAdmin(username);
+            }
+            else
+            {
+                Dictionary<string, object> stats = doc.GetValue<Dictionary<string, object>>("stats");
+                ShowPlayer(username, stats);
+            }
         }
     }
 
@@ -143,11 +144,11 @@ public class DashboardManager : MonoBehaviour
         LoadAllUsers();
     }
 
-    // --- FUNCIONES DE ADMINISTRADOR ---
+    // FUNCIONES DE ADMINISTRADOR
 
     private async void LoadAllUsers()
     {
-        // Borramos la lista anterior para no duplicar
+        // Borramos la lista anterior
         foreach (Transform child in adminContainer) Destroy(child.gameObject);
 
         try
@@ -164,10 +165,10 @@ public class DashboardManager : MonoBehaviour
                     if (!username.ToLower().Contains(searchInput.text.ToLower())) continue;
                 }
 
-                // Creamos la fila en la lista
+                // Instanciamos un prefab de la fila
                 GameObject row = Instantiate(adminRowPrefab, adminContainer);
 
-                // Configuramos la fila con los datos y le pasamos qué funciones ejecutar al tocar los botones
+                // Configuramos la fila con los datos y los poups de los botones
                 row.GetComponent<AdminUserRow>().Configure(
                     doc.Id,
                     username,
@@ -186,20 +187,23 @@ public class DashboardManager : MonoBehaviour
 
     private void OpenDeletePopup(string uid)
     {
-        // Evitamos que el admin se borre a sí mismo
-        if (uid == auth.CurrentUser.UserId) return;
-
-        currentUserIdSelected = uid;
-        confirmationPopup.SetActive(true);
+        // Para no poder borrarse a si mismo compara el uid con el userId actual
+        if (uid != auth.CurrentUser.UserId)
+        {
+            currentUserIdSelected = uid;
+            confirmationPopup.SetActive(true);
+        }
     }
 
     private async void ConfirmDeleteUser()
     {
-        if (string.IsNullOrEmpty(currentUserIdSelected)) return;
-
-        await db.Collection("usuarios").Document(currentUserIdSelected).DeleteAsync();
-        ClosePopups();
-        LoadAllUsers(); // Refrescamos la lista
+        // Si confirma el delete, borra al usuario, cierra los popups y refresca la lista
+        if (!string.IsNullOrEmpty(currentUserIdSelected))
+        {
+            await db.Collection("usuarios").Document(currentUserIdSelected).DeleteAsync();
+            ClosePopups();
+            LoadAllUsers();
+        }
     }
 
     private void OpenEditPopup(string uid, string name, string email, string role)
@@ -207,11 +211,9 @@ public class DashboardManager : MonoBehaviour
         currentUserIdSelected = uid;
         resetFeedbackText.text = "";
 
-        // Ponemos los datos en los inputs para editar
+        // Cargamos los datos por defecto
         editUsernameInput.text = name;
         editEmailInput.text = email;
-
-        // Seleccionamos la opción correcta en el desplegable (0=Jugador, 1=Admin)
         if (role == "Admin") editRoleDropdown.value = 1;
         else editRoleDropdown.value = 0;
 
@@ -220,39 +222,41 @@ public class DashboardManager : MonoBehaviour
 
     private async void SaveChangesUser()
     {
-        if (string.IsNullOrEmpty(currentUserIdSelected)) return;
-
-        // Preparamos solo los datos que queremos cambiar
-        Dictionary<string, object> updates = new Dictionary<string, object>
+        if (!string.IsNullOrEmpty(currentUserIdSelected))
+        {
+            // Preparamos solo los datos que queremos cambiar
+            Dictionary<string, object> updates = new Dictionary<string, object>
         {
             { "username", editUsernameInput.text },
             { "email", editEmailInput.text },
             { "role", editRoleDropdown.options[editRoleDropdown.value].text }
         };
 
-        await db.Collection("usuarios").Document(currentUserIdSelected).UpdateAsync(updates);
-        ClosePopups();
-        LoadAllUsers();
+            await db.Collection("usuarios").Document(currentUserIdSelected).UpdateAsync(updates);
+            ClosePopups();
+            LoadAllUsers();
+        }
     }
 
     private void SendResetEmail()
     {
         string emailTarget = editEmailInput.text;
-        if (string.IsNullOrEmpty(emailTarget)) return;
-
-        // Enviamos el correo de recuperación de contraseña
-        auth.SendPasswordResetEmailAsync(emailTarget).ContinueWithOnMainThread(task => {
-            if (task.IsCanceled || task.IsFaulted)
-            {
-                Debug.LogError("Error al enviar correo.");
-                resetFeedbackText.text = "❌ Error al enviar";
-            }
-            else
-            {
-                Debug.Log("Correo enviado.");
-                resetFeedbackText.text = "✅ Correo enviado";
-            }
-        });
+        if (!string.IsNullOrEmpty(emailTarget))
+        {
+            // Enviamos el correo de recuperación de contraseña
+            auth.SendPasswordResetEmailAsync(emailTarget).ContinueWithOnMainThread(task => {
+                if (task.IsCanceled || task.IsFaulted)
+                {
+                    Debug.LogError("Error al enviar correo.");
+                    resetFeedbackText.text = "❌ Error al enviar";
+                }
+                else
+                {
+                    Debug.Log("Correo enviado.");
+                    resetFeedbackText.text = "✅ Correo enviado";
+                }
+            });
+        }
     }
 
     private void ClosePopups()
@@ -262,7 +266,7 @@ public class DashboardManager : MonoBehaviour
         currentUserIdSelected = "";
     }
 
-    // --- RANKING ---
+    // RANKING
 
     private async void LoadAndShowRanking()
     {
@@ -297,7 +301,7 @@ public class DashboardManager : MonoBehaviour
         playerPanel.SetActive(true);
     }
 
-    // --- NAVEGACIÓN ---
+    // NAVEGACIÓN
 
     private void GoToGameScene()
     {

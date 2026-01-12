@@ -4,19 +4,19 @@ using System.Collections;
 public class BossController : MonoBehaviour
 {
     [Header("Configuración Básica")]
-    public int maxHealth = 100;
+    public int maxHealth = 20;
     private int currentHealth;
     public bool isDead = false;
     public bool isActive = false;
     public string bossName = "The Overlord";
 
     [Header("Referencias")]
-    public Transform player; // A quién perseguimos
-    public UIManager uiManager; // Para la barra de vida
+    public Transform player; 
+    public UIManager uiManager; // Para controlar la barra de vida
     public AudioSource audioSource;
-    public Transform attackPoint; // Desde dónde pegamos el puñetazo
+    public Transform attackPoint;// Desde dónde pegamos el puñetazo
     public Transform firePoint;   // Desde dónde lanzamos la roca
-    public GameObject rockPrefab; // La roca que lanzamos
+    public GameObject rockPrefab;
 
     [Header("Sonidos")]
     public AudioClip sound_BossAttack;
@@ -25,23 +25,23 @@ public class BossController : MonoBehaviour
 
     [Header("Estadísticas de Combate")]
     public float moveSpeed = 3f;
-    public float meleeDetectionRange = 8f; // Si estás cerca te persigue para pegar
+    public float meleeDetectionRange = 8f; // Distancia a la que te empieza a perseguir para atacar a melee
     public float strikingDistance = 2.5f;  // Distancia para pararse y pegar
     public float rangedRange = 15f;        // Si estás lejos te tira piedras
-    public float attackCooldown = 2f;      // Tiempo entre ataques
+    public float attackCooldown = 2f;
     public int meleeDamage = 20;
-    public float attackRadius = 1.5f;      // Tamaño del golpe
+    public float attackRadius = 1.5f;      // La distancia a la que llega el puño
     public LayerMask playerLayer;
-    public float safeZoneHeight = 3.0f;    // Altura donde el boss no llega (trinchera)
+    public float safeZoneHeight = 3.0f;    // Altura de a zona segura (trinchera)
 
-    // Límites para que el boss no se salga del mapa
+    // Límites para que el boss no se salga de la plataforma
     public float minXPosition = -10f;
     public float maxXPosition = 10f;
 
-    private float nextAttackTime = 0f;
+    private float nextAttackTime = 0f; 
     private Rigidbody2D rb;
     private Animator anim;
-    private bool isFacingRight = false;
+    private bool isFacingRight = false; // Para controlar si está mirando al player
     private bool isHurt = false;
 
     void Start()
@@ -51,7 +51,7 @@ public class BossController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         currentHealth = maxHealth;
 
-        // Buscamos al jugador si no lo hemos arrastrado
+        // Buscamos al jugador si no lo hemos arrastrado en el inspector
         if (player == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
@@ -71,17 +71,21 @@ public class BossController : MonoBehaviour
         if (!isActive || isDead || player == null) return;
 
         // Si estamos atacando o recibiendo daño, nos quedamos quietos
-        if (IsPlayingAttackAnimation() || isHurt) { rb.linearVelocity = Vector2.zero; return; }
+        if (IsPlayingAttackAnimation() || isHurt) { 
+            rb.linearVelocity = Vector2.zero; 
+            return; 
+        }
 
+        // Calculamos la distancia entre el jugador y el boss
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
         float diffY = transform.position.y - player.position.y;
 
-        // Lógica de Estado:
-        bool inTrench = diffY > safeZoneHeight; // ¿Está el jugador escondido abajo?
-        bool isMeleeReachable = !inTrench && (diffY > -3.0f); // ¿Podemos alcanzarle cuerpo a cuerpo?
+        bool inTrench = diffY > safeZoneHeight; // Comprueba la altura del player para ver si está en la zona segura
+        bool isMeleeReachable = !inTrench && (diffY > -3.0f); // Comprueba si está a rango de ataque a melee
 
         // Mirar siempre al jugador
         LookAtPlayer();
+
 
         // Si el jugador está escondido en la trinchera, el boss espera
         if (inTrench)
@@ -90,13 +94,15 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        // MÁQUINA DE ESTADOS DE COMBATE
-        // 1. Si está cerca -> Ataque cuerpo a cuerpo
+        // TIPOS DE COMBATE
+
+        // Si está cerca, ataque cuerpo a cuerpo
         if (distanceToPlayer <= meleeDetectionRange && isMeleeReachable)
         {
             if (distanceToPlayer <= strikingDistance)
             {
-                StopMoving(); // Parar para golpear
+                // Se detiene y golpea
+                StopMoving(); 
                 if (Time.time >= nextAttackTime) AttackMelee();
             }
             else
@@ -104,32 +110,30 @@ public class BossController : MonoBehaviour
                 MoveTowardsPlayer(); // Correr hacia él
             }
         }
-        // 2. Si está lejos pero a la vista -> Ataque a distancia
+        // Si está lejos, ataque a distancia
         else if (distanceToPlayer <= rangedRange)
         {
             StopMoving();
             if (Time.time >= nextAttackTime) AttackRanged();
         }
-        // 3. Si está muy lejos -> Esperar
+        // Si está muy lejos, espera
         else
         {
             StopMoving();
         }
 
-        // Actualizar animaciones
         bool isMoving = rb.linearVelocity.magnitude > 0.1f;
         anim.SetFloat("Speed", isMoving ? Mathf.Abs(moveSpeed) : 0f);
     }
 
-    // --- Movimiento ---
+    // MOVIMIENTO
 
     void MoveTowardsPlayer()
     {
         float direction = (player.position.x - transform.position.x) > 0 ? 1 : -1;
 
         // Comprobamos que no se salga de los límites del mapa
-        if ((direction > 0 && transform.position.x >= maxXPosition) ||
-            (direction < 0 && transform.position.x <= minXPosition))
+        if ((direction > 0 && transform.position.x >= maxXPosition) ||(direction < 0 && transform.position.x <= minXPosition))
         {
             StopMoving();
             return;
@@ -157,7 +161,7 @@ public class BossController : MonoBehaviour
         transform.localScale = s;
     }
 
-    // --- Ataques ---
+    // ATAQUES
 
     void AttackMelee()
     {
@@ -172,50 +176,65 @@ public class BossController : MonoBehaviour
         StopMoving();
         anim.SetTrigger("AttackRanged"); // Dispara la animación de lanzar
         PlaySound(sound_BossAttack);
-        nextAttackTime = Time.time + attackCooldown + 1.5f; // Un poco más lento que el melee
+        nextAttackTime = Time.time + attackCooldown + 1f; // Un poco más lento que el melee
     }
 
-    // --- Eventos de Animación (Animation Events) ---
-    // Estas funciones son llamadas DESDE LA ANIMACIÓN justo en el frame del golpe
+    // EVENTOS DE LAS ANIMACIONES
 
     public void GolpeMelee()
     {
-        // Detectamos si el jugador está en el círculo de ataque
-        if (attackPoint == null) return;
-        Collider2D[] hit = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius, playerLayer);
-        foreach (Collider2D p in hit)
-            p.GetComponent<PlayerController>()?.TakeDamage(meleeDamage, transform);
+        if (attackPoint != null)
+        {
+            // Crea un círculo de radio "attackRadius", en la posición "attackPoint.position" en la capa "playerLayer"
+            // y devuelve todo lo que haya tocado en ese radio
+            Collider2D[] hit = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius, playerLayer);
+
+            foreach (Collider2D p in hit)
+            {
+                // En caso de ser el player, recibe daño
+                p.GetComponent<PlayerController>()?.TakeDamage(meleeDamage, transform);
+            }
+        }
     }
 
     public void LanzarRoca()
     {
-        // Creamos la roca y le decimos hacia dónde volar
+        // Creamos la roca y le decimos hacia dónde es lanzada
         if (rockPrefab != null && firePoint != null)
         {
             GameObject r = Instantiate(rockPrefab, firePoint.position, Quaternion.identity);
+
+            // Comprobamos que existe el BossProjectile y llamamos a la función lanzar
             r.GetComponent<BossProjectile>()?.Lanzar(player.position - firePoint.position);
         }
     }
 
-    // --- Daño y Muerte ---
+    // RECIBIR DÑO
 
     public void TakeDamage(int damage)
     {
-        if (isDead) return;
-        if (!isActive) Despertar(); // Si le pegamos dormido, se despierta
+        if (!isDead) { 
+
+        if (!isActive) Despertar();
 
         currentHealth -= damage;
         if (uiManager != null) uiManager.ActualizarVidaBoss(currentHealth);
 
         PlaySound(sound_BossHurt);
         anim.SetTrigger("Hurt");
+
+        // Para stunear al boss y que se quede parado durante x tiempo después de ser dañado usamos una corutina
         StartCoroutine(HurtRoutine());
 
         if (currentHealth <= 0) Die();
+
+        }
     }
 
     IEnumerator HurtRoutine()
     {
+        // Le decimos que ha sido dañado y por tanto en el update
+        // detiene al boss (if (isHurt) { rb.velocity = Vector2.zero; return; }), esperamos 0.4f y continuamos
         isHurt = true;
         yield return new WaitForSeconds(0.4f);
         isHurt = false;
@@ -266,14 +285,16 @@ public class BossController : MonoBehaviour
         if (uiManager != null) uiManager.MostrarPantallaFinal(true, score);
     }
 
+    // Reproductor de efectos de sonido
     void PlaySound(AudioClip clip)
     {
         if (audioSource != null && clip != null) audioSource.PlayOneShot(clip);
     }
 
+
+    // Comprueba si estamos en mitad de una animación de ataque para congelar el movimiento en el update
     bool IsPlayingAttackAnimation()
     {
-        // Comprueba si estamos en mitad de una animación de ataque
         AnimatorStateInfo s = anim.GetCurrentAnimatorStateInfo(0);
         return s.IsName("Boss_Punch") || s.IsName("Boss_Throw");
     }

@@ -12,8 +12,8 @@ using UnityEngine.SceneManagement;
 
 public class AuthManager : MonoBehaviour
 {
-    private FirebaseAuth auth;
-    private FirebaseFirestore db;
+    private FirebaseAuth auth; // Para la autenticación
+    private FirebaseFirestore db; // Para la base de datos
 
     [Header("Paneles")]
     public GameObject welcomePanel;
@@ -44,29 +44,27 @@ public class AuthManager : MonoBehaviour
     {
         ShowWelcomePanel();
 
-        // Asignamos los botones para cambiar de pantalla
         goToLoginButton.onClick.AddListener(ShowLoginPanel);
         goToRegisterButton.onClick.AddListener(ShowRegisterPanel);
         backFromLoginButton.onClick.AddListener(ShowWelcomePanel);
         backFromRegisterButton.onClick.AddListener(ShowWelcomePanel);
-
-        // Botones de acción
         loginButton.onClick.AddListener(HandleLogin);
         registerButton.onClick.AddListener(HandleRegister);
 
+        // Llamamos a la corutina para esperar a que firebase esté listo
         StartCoroutine(InitializeFirebaseSequence());
     }
 
     private IEnumerator InitializeFirebaseSequence()
     {
-        // Esperamos a que el FirebaseManager esté listo antes de empezar
+        // Comprobamos en bucle si firebase está listo pero sin detener el juego (yield return)
         yield return new WaitUntil(() => FirebaseManager.isFirebaseReady);
 
         auth = FirebaseAuth.DefaultInstance;
         db = FirebaseFirestore.DefaultInstance;
     }
 
-    // Funciones para cambiar de pantalla
+    // Funciones con TogglePanels para cambiar de pantallas
 
     private void ShowWelcomePanel() => TogglePanels(true, false, false);
     private void ShowLoginPanel() => TogglePanels(false, true, false);
@@ -77,6 +75,7 @@ public class AuthManager : MonoBehaviour
         welcomePanel.SetActive(welcome);
         loginPanel.SetActive(login);
         registerPanel.SetActive(register);
+        // Limpiamos el mensaje de error cada vez que cambiamos de pantalla
         errorText.text = "";
     }
 
@@ -114,7 +113,7 @@ public class AuthManager : MonoBehaviour
             string email = userDoc.GetValue<string>("email");
             string role = userDoc.GetValue<string>("role");
 
-            // Ahora sí hacemos login con el email y la contraseña
+            // Hacemos login con el email y la contraseña
             AuthResult authResult = await auth.SignInWithEmailAndPasswordAsync(email, password);
             FirebaseUser user = authResult.User;
 
@@ -204,10 +203,11 @@ public class AuthManager : MonoBehaviour
 
     private void HandleFirebaseError(System.Exception ex)
     {
-        // Traducimos los errores raros de Firebase a mensajes normales
+        // Busca el error base y la intenta convertir a excepción
         FirebaseException firebaseEx = ex.GetBaseException() as FirebaseException;
         if (firebaseEx != null)
         {
+            // Intenta convertir el firebaseEx en un error "común" para poder identificarlo y tratarlo fácilmente
             AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
             switch (errorCode)
             {

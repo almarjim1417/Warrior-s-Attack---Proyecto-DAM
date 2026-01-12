@@ -3,24 +3,25 @@ using UnityEngine;
 public class BossZoneTrigger : MonoBehaviour
 {
     [Header("Configuración")]
-    public GameObject muroBoss; // El muro invisible que cierra la salida
+    public GameObject muroBoss; // El muro invisible
     public UIManager uiManager;
 
     public BossController bossScript;
 
     [Header("Audio")]
     public AudioSource audioSourceNivel; // El altavoz de la cámara
-    public AudioClip musicaBoss; // La canción de pelea
+    public AudioClip musicaBoss;
 
-    private bool eventoActivado = false; // Para que no se repita si entras y sales
+    private bool eventoActivado = false; // Control del trigger
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Solo activamos si entra el Jugador y si no ha pasado ya antes
-        if (eventoActivado || !collision.CompareTag("Player")) return;
-
-        eventoActivado = true;
-        iniciarEventoBoss();
+        // Solo se activa si pasa el jugador y es su primera vez
+        if (!eventoActivado && collision.CompareTag("Player"))
+        {
+            eventoActivado = true;
+            iniciarEventoBoss();
+        }
     }
 
     void iniciarEventoBoss()
@@ -28,7 +29,7 @@ public class BossZoneTrigger : MonoBehaviour
         // Activamos el muro para bloquear la salida
         if (muroBoss != null) muroBoss.SetActive(true);
 
-        // Despertamos al Boss y mostramos su barra de vida en la pantalla
+        // Despertamos al Boss y mostramos su barra de vida en el UI
         if (bossScript != null)
         {
             bossScript.Despertar();
@@ -40,10 +41,10 @@ public class BossZoneTrigger : MonoBehaviour
         // Cambiamos la música de fondo por la música de tensión
         if (audioSourceNivel != null && musicaBoss != null)
         {
-            audioSourceNivel.Stop();       // Paramos la música normal
+            audioSourceNivel.Stop(); 
             audioSourceNivel.clip = musicaBoss;
-            audioSourceNivel.loop = true;  // Que se repita en bucle
-            audioSourceNivel.Play();       // Le damos al play
+            audioSourceNivel.loop = true; 
+            audioSourceNivel.Play(); 
         }
     }
 }

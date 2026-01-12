@@ -4,11 +4,11 @@ public class BossProjectile : MonoBehaviour
 {
     [Header("Estadísticas")]
     public float speed = 10f;
-    public float lifeTime = 4f; // Cuánto tiempo vuela antes de desaparecer
+    public float lifeTime = 4f;
     public int damage = 1;
 
     [Header("Efectos Visuales")]
-    public GameObject impactVFX;
+    public GameObject impactVFX; // Partículas
 
     private Rigidbody2D rb;
 
@@ -20,10 +20,10 @@ public class BossProjectile : MonoBehaviour
     // Esta función la llama el BossController cuando dispara la roca
     public void Lanzar(Vector2 direction)
     {
-        rb.gravityScale = 0f; // Quitamos la gravedad para que vuele recto
+        rb.gravityScale = 0f; // Quitamos la gravedad para que vuele recto y a la misma velocidad y dirección
         rb.linearVelocity = direction.normalized * speed;
 
-        // Girar el sprite y que mire hacia donde se mueve
+        // Convertimos la diagonal en un ángulo, lo pasamos a grados y aplicamos el giro.
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, angle);
 
@@ -32,26 +32,28 @@ public class BossProjectile : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D hitInfo)
     {
-        if (hitInfo.CompareTag("Enemy") || hitInfo.gameObject.layer == LayerMask.NameToLayer("Enemy")) return;
-
-        bool haChocado = false;
-
-        // Comprobamos si le hemos dado al Jugador
-        PlayerController player = hitInfo.GetComponent<PlayerController>();
-        if (player != null)
+        // Solo entramos si lo que tocamos no es enemigo
+        if (!hitInfo.CompareTag("Enemy") && hitInfo.gameObject.layer != LayerMask.NameToLayer("Enemy"))
         {
-            player.TakeDamage(damage, transform);
-            haChocado = true;
-        }
-        else if (hitInfo.gameObject.layer == LayerMask.NameToLayer("Ground"))
-        {
-            haChocado = true;
-        }
+            bool haChocado = false;
 
-        if (haChocado)
-        {
-            SpawnImpactEffect();
-            Destroy(gameObject);
+            PlayerController player = hitInfo.GetComponent<PlayerController>();
+
+            if (player != null)
+            {
+                player.TakeDamage(damage, transform);
+                haChocado = true;
+            }
+            else if (hitInfo.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            {
+                haChocado = true;
+            }
+
+            if (haChocado)
+            {
+                SpawnImpactEffect();
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -59,7 +61,7 @@ public class BossProjectile : MonoBehaviour
     {
         if (impactVFX != null)
         {
-            // Creamos las partículas de explosión justo donde está la roca
+            // Creamos las partículas de explosión en el lugar de la roca
             Instantiate(impactVFX, transform.position, Quaternion.identity);
         }
     }
