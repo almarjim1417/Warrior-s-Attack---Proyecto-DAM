@@ -3,11 +3,10 @@ using TMPro;
 
 public class RankingRow : MonoBehaviour
 {
-    // Referencias a los textos de la interfaz
+    // Referencias a los textos
     public TMP_Text nameText;
     public TMP_Text scoreText;
 
-    // Ponemos los datos en pantalla
     public void SetData(string name, string score)
     {
         nameText.text = name;

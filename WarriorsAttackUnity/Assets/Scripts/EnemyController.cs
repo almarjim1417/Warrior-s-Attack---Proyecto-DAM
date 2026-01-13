@@ -16,16 +16,16 @@ public class EnemyController : MonoBehaviour
     [Header("Configuración Zombie (Patrulla)")]
     public float patrolSpeed = 2f;
     public float patrolDistance = 3f;
-    public Transform wallCheckPoint; // Punto desde donde miramos si hay pared
+    public Transform wallCheckPoint;
     public float wallCheckDistance = 0.5f;
-    public LayerMask whatIsGround; // Qué capas cuentan como suelo/pared
+    public LayerMask whatIsGround;
 
     [Header("Configuración Stalker (Perseguidor)")]
     public float chaseSpeed = 5f;
-    public float aggroRange = 6f; // A qué distancia nos ve
+    public float aggroRange = 6f;
     public float attackRange = 1.5f; // A qué distancia pega
-    public Transform ledgeCheckPoint; // Punto para mirar si hay precipicio
-    public bool avoidFalls = true; // Si es true, no se tirará por huecos
+    public Transform EdgeCheck;
+    public bool avoidFalls = true;
     public Transform player;
 
     [Header("Combate")]
@@ -54,52 +54,55 @@ public class EnemyController : MonoBehaviour
         currentHealth = maxHealth;
         startPosition = transform.position;
 
-        // Buscamos al jugador automáticamente si no lo hemos puesto a mano
+        // Comprobación del player
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null) player = playerObj.transform;
     }
 
     void Update()
     {
-        if (isDead) return;
-
-        // Si estamos atacando, nos quedamos quietos
-        if (isAttacking)
+        if (!isDead)
         {
-            rb.linearVelocity = Vector2.zero;
-            return;
-        }
+            // Si estamos atacando, nos quedamos quietos
+            if (isAttacking)
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
+            else
+            {
+                // Ejecutamos la lógica según el zombie que sea
+                switch (enemyType)
+                {
+                    case EnemyType.Zombie:
+                        ZombieLogic();
+                        break;
+                    case EnemyType.Stalker:
+                        StalkerLogic();
+                        break;
+                }
 
-        // Ejecutamos la lógica según qué bicho sea
-        switch (enemyType)
-        {
-            case EnemyType.Zombie:
-                ZombieLogic();
-                break;
-            case EnemyType.Stalker:
-                StalkerLogic();
-                break;
+                // Animación de andar
+                anim.SetBool("IsMoving", Mathf.Abs(rb.linearVelocity.x) > 0.1f);
+                anim.SetBool("IsChasing", isChasing);
+            }
         }
-
-        // Animación de andar
-        anim.SetBool("IsMoving", Mathf.Abs(rb.linearVelocity.x) > 0.1f);
-        anim.SetBool("IsChasing", isChasing);
     }
 
-    // --- ZOMBIE: Camina de un lado a otro ---
+    // LÓGICA DE ZOMBIE (PATRULLA)
     void ZombieLogic()
     {
         isChasing = false;
 
+        // Si se mueve para la derecha, v positiva y si no, negativa
         float speed = movingRight ? patrolSpeed : -patrolSpeed;
         rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
 
-        // Si nos alejamos mucho del punto de inicio, damos la vuelta
+        // La patrulla controla 3f para cada lado
         float distanceFromStart = transform.position.x - startPosition.x;
         if (movingRight && distanceFromStart > patrolDistance) Flip();
         else if (!movingRight && distanceFromStart < -patrolDistance) Flip();
 
-        // Si nos chocamos con una pared, damos la vuelta
+        // Comprobamos si hay muro delante
         if (wallCheckPoint != null)
         {
             bool hitWall = Physics2D.Raycast(wallCheckPoint.position, transform.right, wallCheckDistance, whatIsGround);
@@ -107,19 +110,18 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    // --- STALKER: Persigue al jugador ---
+    // LÓGICA DE STALKER (PERSEGUIDOR)
     void StalkerLogic()
     {
         if (player == null) return;
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
+        // Comprobamos si ha detectado al jugador
         if (!isChasing)
         {
-            // Está quieto esperando
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
 
-            // Si el jugador se acerca, empieza la persecución
             if (distanceToPlayer < aggroRange)
             {
                 isChasing = true;
@@ -129,24 +131,18 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
-            // Ya nos ha visto
             if (distanceToPlayer <= attackRange)
             {
-                // Está a rango de golpe: Ataca
                 rb.linearVelocity = Vector2.zero;
                 StartCoroutine(PerformAttackSequence(player.gameObject));
             }
             else
             {
-                // Está lejos: Persigue
-
-                // Evitar caídas por precipicios
-                if (avoidFalls && ledgeCheckPoint != null)
+                if (avoidFalls && EdgeCheck != null)
                 {
-                    bool haySuelo = Physics2D.Raycast(ledgeCheckPoint.position, Vector2.down, 2f, whatIsGround);
+                    bool haySuelo = Physics2D.Raycast(EdgeCheck.position, Vector2.down, 2f, whatIsGround);
                     if (!haySuelo)
                     {
-                        // Si no hay suelo, se frena y no avanza
                         rb.linearVelocity = Vector2.zero;
                         return;
                     }
@@ -157,6 +153,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    //Persecución al player
     void ChasePlayer()
     {
         // Miramos hacia el jugador
@@ -167,30 +164,32 @@ public class EnemyController : MonoBehaviour
         rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
     }
 
+    // Cambio de sentido
     void Flip()
     {
         movingRight = !movingRight;
         transform.Rotate(0f, 180f, 0f);
     }
 
+    // Recibo de daño
     public void TakeDamage(int damageAmount)
     {
-        if (isDead) return;
-
-        currentHealth -= damageAmount;
-
-        if (audioSource != null && sound_ZombieHurt != null)
-            audioSource.PlayOneShot(sound_ZombieHurt);
-
-        if (currentHealth <= 0)
+        if (!isDead)
         {
-            Die();
-        }
-        else
-        {
-            anim.SetTrigger("Hurt");
-            // Si le pegamos, nos empieza a perseguir aunque fuera un Zombie tranquilo
-            if (enemyType == EnemyType.Stalker) isChasing = true;
+            currentHealth -= damageAmount;
+
+            if (audioSource != null && sound_ZombieHurt != null) audioSource.PlayOneShot(sound_ZombieHurt);
+
+            if (currentHealth <= 0)
+            {
+                Die();
+            }
+            else
+            {
+                anim.SetTrigger("Hurt");
+                // Si le pegamos, nos empieza a perseguir aunque estemos fuera del aggro
+                if (enemyType == EnemyType.Stalker) isChasing = true;
+            }
         }
     }
 
@@ -211,7 +210,7 @@ public class EnemyController : MonoBehaviour
             FirebaseManager.Instance.ActualizarEstadistica("kill", 1);
         }
 
-        // Desactivamos el script y ajustamos el colider para que se pueda pisar el cadáver
+        // Desactivamos el script y ajustamos el colider para "atravesar" el cadáver
         this.enabled = false;
 
         BoxCollider2D col = GetComponent<BoxCollider2D>();
@@ -223,10 +222,10 @@ public class EnemyController : MonoBehaviour
         }
 
         rb.linearVelocity = Vector2.zero;
-        rb.bodyType = RigidbodyType2D.Kinematic; // Quitamos físicas
-        gameObject.tag = "Untagged"; // Quitamos etiqueta de enemigo
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        gameObject.tag = "Untagged";
 
-        Destroy(gameObject, 2f); // Desaparece a los 2 segundos
+        Destroy(gameObject, 2f);
     }
 
     // Para cuando el Zombie choca con el jugador simplemente caminando
@@ -253,13 +252,12 @@ public class EnemyController : MonoBehaviour
         if (audioSource != null && sound_ZombieAttack != null)
             audioSource.PlayOneShot(sound_ZombieAttack);
 
-        // Esperamos el momento justo de la animación para hacer daño
+        // Esperamos el retraso de la animación para realizar el ataque y
         yield return new WaitForSeconds(timeToHit);
 
         if (target != null && !isDead)
         {
             float dist = Vector2.Distance(transform.position, target.transform.position);
-            // Comprobamos si el jugador sigue cerca
             if (dist <= attackRange + 1f)
             {
                 PlayerController playerScript = target.GetComponent<PlayerController>();
@@ -267,26 +265,25 @@ public class EnemyController : MonoBehaviour
             }
         }
 
-        // Pequeña pausa después de atacar
+        // Pausa después de atacar
         yield return new WaitForSeconds(0.5f);
         isAttacking = false;
     }
 
-    // Dibujitos en el editor para ver los rangos
-    void OnDrawGizmosSelected()
-    {
-        if (ledgeCheckPoint != null)
-        {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(ledgeCheckPoint.position, ledgeCheckPoint.position + Vector3.down * 2f);
-        }
+    //void OnDrawGizmosSelected()
+    //{
+    //    if (EdgeCheck != null)
+    //    {
+    //        Gizmos.color = Color.cyan;
+    //        Gizmos.DrawLine(EdgeCheck.position, EdgeCheck.position + Vector3.down * 2f);
+    //    }
 
-        if (enemyType == EnemyType.Stalker)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, aggroRange); // Rango visión
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, attackRange); // Rango ataque
-        }
-    }
+    //    if (enemyType == EnemyType.Stalker)
+    //    {
+    //        Gizmos.color = Color.red;
+    //        Gizmos.DrawWireSphere(transform.position, aggroRange); // Rango visión
+    //        Gizmos.color = Color.yellow;
+    //        Gizmos.DrawWireSphere(transform.position, attackRange); // Rango ataque
+    //    }
+    //}
 }

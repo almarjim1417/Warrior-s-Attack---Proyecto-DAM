@@ -7,7 +7,7 @@ public class Moneda : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Optimizacion: Primero comprobamos el Tag para no hacer GetComponents innecesarios
+        // Solo actúa si el player es quién entra en contacto
         if (collision.CompareTag("Player"))
         {
             PlayerController player = collision.GetComponent<PlayerController>();
@@ -18,6 +18,7 @@ public class Moneda : MonoBehaviour
 
                 if (pickupVFX != null)
                 {
+                    // Crea la animación
                     Instantiate(pickupVFX, transform.position, Quaternion.identity);
                 }
 

@@ -40,10 +40,11 @@ public class FirebaseManager : MonoBehaviour
 
     private IEnumerator InitializeFirebaseSequence()
     {
-        // Esperamos a que el móvil compruebe si tiene los servicios de Google instalados
+        // Esperamos a que compruebe si tiene los servicios de Google instalados
         var checkTask = Firebase.FirebaseApp.CheckAndFixDependenciesAsync();
         yield return new WaitUntil(() => checkTask.IsCompleted);
 
+        // Si el resultado es correcto, 
         if (checkTask.Result == Firebase.DependencyStatus.Available)
         {
             Firebase.FirebaseApp app = Firebase.FirebaseApp.DefaultInstance;
@@ -80,27 +81,25 @@ public class FirebaseManager : MonoBehaviour
 
     public async void ActualizarEstadistica(string type, int amount)
     {
-        if (!isFirebaseReady || auth.CurrentUser == null) return;
-
-        string userId = auth.CurrentUser.UserId;
-        DocumentReference userDoc = db.Collection("usuarios").Document(userId);
-
-        string fieldPath = GetFieldPath(type);
-        if (string.IsNullOrEmpty(fieldPath)) return;
-
-        try
+        if (isFirebaseReady && auth.CurrentUser != null)
         {
-            // Usamos Increment para sumar el valor directamente en la nube sin fallos
-            Dictionary<string, object> updates = new Dictionary<string, object>
+            string userId = auth.CurrentUser.UserId;
+            DocumentReference userDoc = db.Collection("usuarios").Document(userId);
+
+            string fieldPath = GetFieldPath(type);
+            if (!string.IsNullOrEmpty(fieldPath))
             {
-                { fieldPath, FieldValue.Increment(amount) }
-            };
+                try
+                {
+                    Dictionary<string, object> updates = new Dictionary<string, object> {{ fieldPath, FieldValue.Increment(amount) }};
 
-            await userDoc.UpdateAsync(updates);
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"Error al guardar: {ex.Message}");
+                    await userDoc.UpdateAsync(updates);
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"Error al guardar: {ex.Message}");
+                }
+            }
         }
     }
 
@@ -111,13 +110,27 @@ public class FirebaseManager : MonoBehaviour
 
     private string GetFieldPath(string type)
     {
+        string path = "";
+
         switch (type)
         {
-            case "kill": return "stats.total_kills";
-            case "win": return "stats.total_wins";
-            case "loss": return "stats.total_losses";
-            case "score": return "stats.best_score";
-            default: return "";
+            case "kill":
+                path = "stats.total_kills";
+                break;
+            case "win":
+                path = "stats.total_wins";
+                break;
+            case "loss":
+                path = "stats.total_losses";
+                break;
+            case "score":
+                path = "stats.best_score";
+                break;
+            default:
+                path = "";
+                break;
         }
+
+        return path;
     }
 }

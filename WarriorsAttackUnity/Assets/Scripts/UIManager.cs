@@ -7,13 +7,11 @@ public class UIManager : MonoBehaviour
 {
     [Header("Interfaz Jugador")]
     public TextMeshProUGUI textoMonedas;
-
-    [Header("Vida")]
     public Image[] corazones;
     public Sprite corazonLleno;
     public Sprite corazonVacio;
 
-    [Header("Jefe Final")]
+    [Header("Boss")]
     public GameObject panelBoss;
     public Slider sliderBoss;
     public TextMeshProUGUI textoNombreBoss;
@@ -22,12 +20,8 @@ public class UIManager : MonoBehaviour
     public GameObject panelFinal;
     public TextMeshProUGUI textoTitulo;
     public TextMeshProUGUI textoScore;
-
-    [Header("Botones")]
     public Button botonMenu;
     public Button botonSalir;
-
-    [Header("Audio Final")]
     public AudioClip music_Victory;
     public AudioClip music_Defeat;
 
@@ -52,7 +46,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // --- HUD JUGADOR ---
+    // HUD JUGADOR
 
     public void ActualizarMonedas(int cantidad)
     {
@@ -61,7 +55,7 @@ public class UIManager : MonoBehaviour
 
     public void ActualizarSalud(int saludActual)
     {
-        // Recorremos los corazones para pintarlos llenos o vacíos según la vida actual
+        // Según la vida actual, llenamos x corazones
         for (int i = 0; i < corazones.Length; i++)
         {
             if (i < saludActual) corazones[i].sprite = corazonLleno;
@@ -69,13 +63,13 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // --- HUD JEFE ---
+    // HUD BOSS
 
     public void ActivarBossUI(int vidaMaxima, string nombre)
     {
         if (panelBoss != null)
         {
-            panelBoss.SetActive(true); // Mostramos la barra
+            panelBoss.SetActive(true);
             sliderBoss.maxValue = vidaMaxima;
             sliderBoss.value = vidaMaxima;
 
@@ -93,7 +87,7 @@ public class UIManager : MonoBehaviour
         if (panelBoss != null) panelBoss.SetActive(false);
     }
 
-    // --- PANTALLA FINAL ---
+    // PANTALLA FINAL
 
     public void MostrarPantallaFinal(bool esVictoria, int scorePartida)
     {
@@ -101,14 +95,14 @@ public class UIManager : MonoBehaviour
         {
             panelFinal.SetActive(true);
 
-            // 1. Parar la música del nivel (normalmente en la cámara)
+            // Parar la música del nivel (normalmente en la cámara)
             if (Camera.main != null)
             {
                 AudioSource musicaFondo = Camera.main.GetComponent<AudioSource>();
                 if (musicaFondo != null) musicaFondo.Stop();
             }
 
-            // 2. Poner música de victoria o derrota
+            // Poner música de victoria o derrota
             if (audioSource != null)
             {
                 audioSource.loop = false;
@@ -124,7 +118,7 @@ public class UIManager : MonoBehaviour
                 }
             }
 
-            // 3. Configurar textos y colores
+            // Configurar textos y colores
             if (textoTitulo != null)
             {
                 if (esVictoria)
@@ -144,16 +138,16 @@ public class UIManager : MonoBehaviour
                 textoScore.text = "Puntuación: " + scorePartida.ToString();
             }
 
-            // 4. Parar el tiempo del juego
+            // Paramos el tiempo del juego
             Time.timeScale = 0f;
         }
     }
 
-    // --- NAVEGACIÓN ---
+    // BOTONES DE NEAV
 
     public void IrAlDashboard()
     {
-        Time.timeScale = 1f; // Reactivamos el tiempo antes de cambiar de escena
+        Time.timeScale = 1f; // Reactivamos el tiempo
         SceneManager.LoadScene("DashboardScene");
     }
 
