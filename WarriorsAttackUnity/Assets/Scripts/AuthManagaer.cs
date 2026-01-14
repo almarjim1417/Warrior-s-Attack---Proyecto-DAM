@@ -90,39 +90,41 @@ public class AuthManager : MonoBehaviour
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
             ShowError("Usuario y contraseña requeridos.");
-            return;
         }
-
-        ShowError("Autenticando...");
-
-        try
+        else
         {
-            // Primero buscamos el email usando el nombre de usuario
-            QuerySnapshot usernameQuery = await db.Collection("usuarios")
-                .WhereEqualTo("username", username)
-                .Limit(1)
-                .GetSnapshotAsync();
+            ShowError("Autenticando...");
 
-            if (usernameQuery.Count == 0)
+            try
             {
-                ShowError("Credenciales inválidas.");
-                return;
+                // Primero buscamos el email usando el nombre de usuario
+                QuerySnapshot usernameQuery = await db.Collection("usuarios")
+                    .WhereEqualTo("username", username)
+                    .Limit(1)
+                    .GetSnapshotAsync();
+
+                if (usernameQuery.Count == 0)
+                {
+                    ShowError("Credenciales inválidas.");
+                }
+                else
+                {
+                    DocumentSnapshot userDoc = usernameQuery.Documents.FirstOrDefault();
+                    string email = userDoc.GetValue<string>("email");
+                    string role = userDoc.GetValue<string>("role");
+
+                    // Hacemos login con el email y la contraseña
+                    AuthResult authResult = await auth.SignInWithEmailAndPasswordAsync(email, password);
+                    FirebaseUser user = authResult.User;
+
+                    Debug.Log($"Login correcto: {user.UserId} ({role})");
+                    SceneManager.LoadScene("DashboardScene");
+                }
             }
-
-            DocumentSnapshot userDoc = usernameQuery.Documents.FirstOrDefault();
-            string email = userDoc.GetValue<string>("email");
-            string role = userDoc.GetValue<string>("role");
-
-            // Hacemos login con el email y la contraseña
-            AuthResult authResult = await auth.SignInWithEmailAndPasswordAsync(email, password);
-            FirebaseUser user = authResult.User;
-
-            Debug.Log($"Login correcto: {user.UserId} ({role})");
-            SceneManager.LoadScene("DashboardScene");
-        }
-        catch (System.Exception ex)
-        {
-            HandleFirebaseError(ex);
+            catch (System.Exception ex)
+            {
+                HandleFirebaseError(ex);
+            }
         }
     }
 
@@ -136,66 +138,66 @@ public class AuthManager : MonoBehaviour
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
             ShowError("Todos los campos son obligatorios.");
-            return;
         }
-
-        if (password.Length < 6)
+        else if (password.Length < 6)
         {
             ShowError("La contraseña debe tener al menos 6 caracteres.");
-            return;
         }
-
-        ShowError("Creando cuenta...");
-
-        try
+        else
         {
-            // Comprobamos si ese nombre de usuario ya existe en la base de datos
-            QuerySnapshot usernameQuery = await db.Collection("usuarios")
-                .WhereEqualTo("username", username)
-                .Limit(1)
-                .GetSnapshotAsync();
+            ShowError("Creando cuenta...");
 
-            if (usernameQuery.Count > 0)
+            try
             {
-                ShowError("El nombre de usuario ya existe.");
-                return;
+                // Comprobamos si ese nombre de usuario ya existe en la base de datos
+                QuerySnapshot usernameQuery = await db.Collection("usuarios")
+                    .WhereEqualTo("username", username)
+                    .Limit(1)
+                    .GetSnapshotAsync();
+
+                if (usernameQuery.Count > 0)
+                {
+                    ShowError("El nombre de usuario ya existe.");
+                }
+                else
+                {
+                    // Creamos el usuario en Firebase Authentication
+                    Task<AuthResult> registerTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
+                    await registerTask;
+
+                    if (registerTask.IsFaulted) throw registerTask.Exception;
+
+                    string userId = registerTask.Result.User.UserId;
+
+                    // Preparamos los datos iniciales (stats a cero)
+                    Dictionary<string, object> userStats = new Dictionary<string, object>
+                {
+                    { "total_kills", 0 },
+                    { "total_wins", 0 },
+                    { "total_losses", 0 },
+                    { "best_score", 0 }
+                };
+
+                    Dictionary<string, object> userProfile = new Dictionary<string, object>
+                {
+                    { "username", username },
+                    { "email", email },
+                    { "role", "Jugador" },
+                    { "stats", userStats }
+                };
+
+                    // Guardamos la ficha del jugador en Firestore
+                    await db.Collection("usuarios").Document(userId).SetAsync(userProfile);
+
+                    ShowLoginPanel();
+                    usernameLoginInput.text = username;
+                    ShowError("Cuenta creada. Por favor inicia sesión.");
+                }
             }
-
-            // Creamos el usuario en Firebase Authentication
-            Task<AuthResult> registerTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
-            await registerTask;
-
-            if (registerTask.IsFaulted) throw registerTask.Exception;
-
-            string userId = registerTask.Result.User.UserId;
-
-            // Preparamos los datos iniciales (stats a cero)
-            Dictionary<string, object> userStats = new Dictionary<string, object>
+            catch (System.Exception ex)
             {
-                { "total_kills", 0 },
-                { "total_wins", 0 },
-                { "total_losses", 0 },
-                { "best_score", 0 }
-            };
-
-            Dictionary<string, object> userProfile = new Dictionary<string, object>
-            {
-                { "username", username },
-                { "email", email },
-                { "role", "Jugador" },
-                { "stats", userStats }
-            };
-
-            // Guardamos la ficha del jugador en Firestore
-            await db.Collection("usuarios").Document(userId).SetAsync(userProfile);
-
-            ShowLoginPanel();
-            usernameLoginInput.text = username;
-            ShowError("Cuenta creada. Por favor inicia sesión.");
-        }
-        catch (System.Exception ex)
-        {
-            HandleFirebaseError(ex);
+                HandleFirebaseError(ex);
+            }
         }
     }
 

@@ -11,7 +11,7 @@ public class BossController : MonoBehaviour
     public string bossName = "The Overlord";
 
     [Header("Referencias")]
-    public Transform player; 
+    public Transform player;
     public UIManager uiManager; // Para controlar la barra de vida
     public AudioSource audioSource;
     public Transform attackPoint;// Desde dónde pegamos el puñetazo
@@ -38,7 +38,7 @@ public class BossController : MonoBehaviour
     public float minXPosition = -10f;
     public float maxXPosition = 10f;
 
-    private float nextAttackTime = 0f; 
+    private float nextAttackTime = 0f;
     private Rigidbody2D rb;
     private Animator anim;
     private bool isFacingRight = false; // Para controlar si está mirando al player
@@ -68,62 +68,66 @@ public class BossController : MonoBehaviour
     void Update()
     {
         // Si no está activo, está muerto o no hay jugador, no hacemos nada
-        if (!isActive || isDead || player == null) return;
-
-        // Si estamos atacando o recibiendo daño, nos quedamos quietos
-        if (IsPlayingAttackAnimation() || isHurt) { 
-            rb.linearVelocity = Vector2.zero; 
-            return; 
-        }
-
-        // Calculamos la distancia entre el jugador y el boss
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-        float diffY = transform.position.y - player.position.y;
-
-        bool inTrench = diffY > safeZoneHeight; // Comprueba la altura del player para ver si está en la zona segura
-        bool isMeleeReachable = !inTrench && (diffY > -3.0f); // Comprueba si está a rango de ataque a melee
-
-        // Mirar siempre al jugador
-        LookAtPlayer();
-
-
-        // Si el jugador está escondido en la trinchera, el boss espera
-        if (inTrench)
+        if (isActive && !isDead && player != null)
         {
-            StopMoving();
-            return;
-        }
-
-        // TIPOS DE COMBATE
-
-        // Si está cerca, ataque cuerpo a cuerpo
-        if (distanceToPlayer <= meleeDetectionRange && isMeleeReachable)
-        {
-            if (distanceToPlayer <= strikingDistance)
+            // Si estamos atacando o recibiendo daño, nos quedamos quietos
+            if (IsPlayingAttackAnimation() || isHurt)
             {
-                // Se detiene y golpea
-                StopMoving(); 
-                if (Time.time >= nextAttackTime) AttackMelee();
+                rb.linearVelocity = Vector2.zero;
             }
             else
             {
-                MoveTowardsPlayer(); // Correr hacia él
-            }
-        }
-        // Si está lejos, ataque a distancia
-        else if (distanceToPlayer <= rangedRange)
-        {
-            StopMoving();
-            if (Time.time >= nextAttackTime) AttackRanged();
-        }
-        // Si está muy lejos, espera
-        else
-        {
-            StopMoving();
-        }
+                // Calculamos la distancia entre el jugador y el boss
+                float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+                float diffY = transform.position.y - player.position.y;
 
-        bool isMoving = rb.linearVelocity.magnitude > 0.1f;
-        anim.SetFloat("Speed", isMoving ? Mathf.Abs(moveSpeed) : 0f);
+                bool inTrench = diffY > safeZoneHeight; // Comprueba la altura del player para ver si está en la zona segura
+                bool isMeleeReachable = !inTrench && (diffY > -3.0f); // Comprueba si está a rango de ataque a melee
+
+                // Mirar siempre al jugador
+                LookAtPlayer();
+
+
+                // Si el jugador está escondido en la trinchera, el boss espera
+                if (inTrench)
+                {
+                    StopMoving();
+                }
+                else
+                {
+                    // TIPOS DE COMBATE
+
+                    // Si está cerca, ataque cuerpo a cuerpo
+                    if (distanceToPlayer <= meleeDetectionRange && isMeleeReachable)
+                    {
+                        if (distanceToPlayer <= strikingDistance)
+                        {
+                            // Se detiene y golpea
+                            StopMoving();
+                            if (Time.time >= nextAttackTime) AttackMelee();
+                        }
+                        else
+                        {
+                            MoveTowardsPlayer(); // Correr hacia él
+                        }
+                    }
+                    // Si está lejos, ataque a distancia
+                    else if (distanceToPlayer <= rangedRange)
+                    {
+                        StopMoving();
+                        if (Time.time >= nextAttackTime) AttackRanged();
+                    }
+                    // Si está muy lejos, espera
+                    else
+                    {
+                        StopMoving();
+                    }
+                }
+            }
+
+            // Usamos la velocidad real en X para evitar que se deslice si la animación no concuerda
+            anim.SetFloat("Speed", Mathf.Abs(rb.linearVelocity.x));
+        }
     }
 
     // MOVIMIENTO
@@ -133,7 +137,7 @@ public class BossController : MonoBehaviour
         float direction = (player.position.x - transform.position.x) > 0 ? 1 : -1;
 
         // Comprobamos que no se salga de los límites del mapa
-        if ((direction > 0 && transform.position.x >= maxXPosition) ||(direction < 0 && transform.position.x <= minXPosition))
+        if ((direction > 0 && transform.position.x >= maxXPosition) || (direction < 0 && transform.position.x <= minXPosition))
         {
             StopMoving();
             return;
@@ -213,20 +217,21 @@ public class BossController : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (!isDead) { 
+        if (!isDead)
+        {
 
-        if (!isActive) Despertar();
+            if (!isActive) Despertar();
 
-        currentHealth -= damage;
-        if (uiManager != null) uiManager.ActualizarVidaBoss(currentHealth);
+            currentHealth -= damage;
+            if (uiManager != null) uiManager.ActualizarVidaBoss(currentHealth);
 
-        PlaySound(sound_BossHurt);
-        anim.SetTrigger("Hurt");
+            PlaySound(sound_BossHurt);
+            anim.SetTrigger("Hurt");
 
-        // Para stunear al boss y que se quede parado durante x tiempo después de ser dañado usamos una corutina
-        StartCoroutine(HurtRoutine());
+            // Para stunear al boss y que se quede parado durante x tiempo después de ser dañado usamos una corutina
+            StartCoroutine(HurtRoutine());
 
-        if (currentHealth <= 0) Die();
+            if (currentHealth <= 0) Die();
 
         }
     }
@@ -296,6 +301,32 @@ public class BossController : MonoBehaviour
     bool IsPlayingAttackAnimation()
     {
         AnimatorStateInfo s = anim.GetCurrentAnimatorStateInfo(0);
-        return s.IsName("Boss_Punch") || s.IsName("Boss_Throw");
+        // He cambiado los nombres a minúsculas como indicaste
+        return s.IsName("boss_punch") ||
+               s.IsName("boss_throw") ||
+               s.IsName("boss_aim") ||
+               s.IsName("boss_guard");
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        // Rango ataque a distancia (Azul)
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, rangedRange);
+
+        // Rango persecución melee (Amarillo)
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, meleeDetectionRange);
+
+        // Distancia para pararse y pegar (Rojo)
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, strikingDistance);
+
+        // Radio del puñetazo
+        if (attackPoint != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
+        }
     }
 }

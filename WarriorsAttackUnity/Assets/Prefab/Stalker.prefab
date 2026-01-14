@@ -276,9 +276,9 @@ MonoBehaviour:
   chaseSpeed: 6
   aggroRange: 5
   attackRange: 1.5
-  player: {fileID: 0}
-  ledgeCheckPoint: {fileID: 5087422876643600148}
+  EdgeCheck: {fileID: 5087422876643600148}
   avoidFalls: 1
+  player: {fileID: 0}
   timeToHit: 0.3
   sound_ZombieAttack: {fileID: 8300000, guid: 1818925bfd35c464a998d25f57ab7122, type: 3}
   sound_ZombieHurt: {fileID: 8300000, guid: 92de8c9f0031b684fa9f34ce20bfe9de, type: 3}
